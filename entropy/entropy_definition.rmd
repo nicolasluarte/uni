@@ -1,0 +1,31 @@
+---
+title: Entropy
+author: Nicolás Luarte
+output: pdf_document
+---
+
+[Video link](https://www.youtube.com/watch?v=LodZWzrbayY])
+
+## Uncertainty
+- uncertainty in a random variable or random quantity
+- information gained by learning the value of some unknown random variable
+
+Let 
+\begin{equation}
+        \textrm{Let x be a discrete random variable}\ x \in X,\ X \sim P
+\end{equation}
+The entropy of x is
+\begin{equation}
+        H(X) = -\sum_{x \in X} P(x)\ log_{2}\ P(x)
+\end{equation}
+
+## Log base 2, "bits"
+
+```{r warning=FALSE, fig.height=4, fig.width=4, fig.align="center"}
+plot(log2(0:100), type = "line")
+```
+
+## Expectation
+\begin{equation}
+        E(f(x)) = \sum_{x \in X} f(x)\ p(x)
+\end{equation}
