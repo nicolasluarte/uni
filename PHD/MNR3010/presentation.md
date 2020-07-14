@@ -121,6 +121,6 @@ PCR
 
 Desarrollo de preferencia
 
-# Conclusiones
+# Conclusiones generales sobre las técnicas presentadas
 
 
