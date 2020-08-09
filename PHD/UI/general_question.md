@@ -1,13 +1,3 @@
-# Initial thoughts
-
-- we have mice that are offered two option of food at a given cost (FR 5) sucrose and umami
-- mice develop a preference and have certain elasticity parameter (alpha) for each of the options
-- later on, the preferred option is punished
-- we can observe changes in elasticity given punishment
-- consumption of not preferred option
-- we track movement, can relate deviation from optimal path for each of succesful consumptions
-- then we can (a) measure levels of orexin/dyn, we can repeat the test given injections of both in PVN
-
 # Title
 
 - 'Role of orexin and opioid dynorphin peptides in food intake and obesity'
@@ -25,23 +15,49 @@
 
 # Theory (brief)
 
-- orexin role
-- dyn role
-- site specific
-- hedonic
-- homeostatic
+- Orexin neuropeptide that regulates aoursal, wakefulnes, feeding behavior, they are made exclusively by hypothalamic neurons and have extensive projection trough the central nervous system
+
+- Dynorphin related to homeostatic feeding, stress response, exerts their effects through k-opioid receptor
+
+- Homeostatic feeding: given and energy depletion, this is characterized by an increased motivation to eat and restore energy balance
+
+- Hedonic feeding: augment in feeding motivation, with no energy deficit, particulary in highly palatable foods
+
+- Palatable: has multiple defintions, but are foods which on consumption increases the intake or are largely preferred
+
+- In reward circuits (ventral tegmental area) -> OXA increases hedonic intake
+
+- In reward circuits (ventral tegmental area) -> DYN block OXA effect
+
+- In PVN (paraventricular hypothalamic nucleus) the effects are reversed
+
+- Both OXA and DYN have site-specific effects
+
+- Blockade of orexin (in ventral pallidum) -> increased elasticity (in drug seeking behavior)
+
+- Exendin-4 (inhibits food intake) and this effects if modulated by food preference (preferred food 'blocks' exendin-4 effect)
 
 # Hypothesis
 
-- aim 3
+- Determine whether opioid DYN and orexin in PVN have opposing effects on hedonic intake
+- That is: prefered vs non-prefered
+- Elasticity given punishement to preferred tasty food
+Price elasticity of demand
+- DYN en PVN -> enhances hedonic intake: más elástico
+- OXA en PVN -> blocks hedonic intake: poco elástico
 
 # General objectives
 
-- explicar el desarrollo de la maquinita
+- Important measures in this kind of experiments are spontaneus physical activity, measures of selection conflict, among others, all of which need to have x, y, z data of mice. Also to evaluate elasticity we need to measure 'licks'
+
+- Objective 1: using python opencv generate a 'workflow' that is automated enough to control multiple instances
+- Objective 2: for each instance, generate a script that allows to generate, in real time, processing of x, y, z coordinates and centroid calculation
+- Objective 3: for each instance, generate a script that can manage adequately both data and video recordings
 
 # Methods
 
-- como medir el spa
-- coordinación con el licometro
-- mostrar estudio
-
+- Currently no relevant data to re-analyze
+- Segmentation algoritms (fast enough to operate in a pi)
+- Centroid calculation (the challenge is head movement)
+- Sync 'licks' with centroid position y the proper time scale
+- Possibly -> calculation of spa and conflict (deviation from optimal path)
