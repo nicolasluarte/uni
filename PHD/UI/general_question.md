@@ -45,7 +45,7 @@
 Price elasticity of demand
 - DYN en PVN -> enhances hedonic intake: más elástico
 - OXA en PVN -> blocks hedonic intake: poco elástico
-
+- ad libitum
 # General objectives
 
 - Important measures in this kind of experiments are spontaneus physical activity, measures of selection conflict, among others, all of which need to have x, y, z data of mice. Also to evaluate elasticity we need to measure 'licks'
