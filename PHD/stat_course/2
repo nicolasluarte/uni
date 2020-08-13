@@ -1,0 +1,72 @@
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+```
+
+
+```{r}
+# load the dataset
+dataSet <- as_tibble(mtcars)
+head(dataSet)
+```
+
+## 1. How many observations does it have?
+```{r}
+# The total number of observations is equal to the number of rows
+# multiplied by the number of columns
+print(dim(dataSet))
+prod(dim(dataSet))
+```
+There are a total of 352 observations, 32 observations per variable
+
+## 2. How many variables does it have?
+```{r}
+# the number of variables is equal, in this case to the number of columns
+ncol(dataSet)
+```
+There are a total of 11 variables
+
+## 3. What is the percentage of missing data?
+```{r}
+# We can ask R to check not available data point
+# 'TRUE' means that the value corresponds to missing data
+# 'FALSE' means is a valid data point
+is.na(dataSet)
+```
+There are no missing observations, so the percentage is 0
+
+## 4. What types of data does it have: quantitative (continuous or discrete), categorical (binary, nominal or ordinal), Time-to-event?
+
+```{r, echo=FALSE}
+dataSetTable <- data.frame(Variable = colnames(dataSet),
+		    Description = c('Miles per gallon', 'Number of cylinders', 'Displacement metric',
+				    'Horsepower', 'Rear axle ratio', 'Weight (1000 lbs)', 
+				    '1/4 mile time', 'Engine (0 = V-shaped, 1 = straight',
+				    'Transmission (0 = automatic, 1 = manual', 'Number of forward gears', 'Number of carburetors'),
+	            Type = c('Quantitative-Continuous', 'Quantitative-Discrete', 'Quantitative-Continuous', 'Quantitative-Continuous', 'Quantitative-Continuous-Ratio',
+			     'Quantitative-Continuous', 'Quantitative-Continuous', 
+			     'Categorical-Binary', 'Categorical-Binary', 'Quantitative-Discrete',
+			     'Quantitative-Discrete'))
+kable(dataSetTable, caption = "Variable type")
+```
+
+## 5. Boxplot
+```{r, echo=FALSE}
+# The chosen variable are the Miles per gallon
+ggplot(dataSet, aes(x="mpg", y=mpg)) +
+	geom_boxplot() +
+	theme_bw() +
+	ylab("Miles per gallon") +
+	xlab("")
+```
+
+## 6. Histogram
+```{r, echo=FALSE}
+ggplot(dataSet, aes(x=mpg)) +
+       geom_histogram() +
+       theme_bw() +
+       xlab("Miles per gallon") +
+       ylab("Frequency")
+```
+
