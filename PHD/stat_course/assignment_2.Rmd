@@ -1,0 +1,77 @@
+---
+title: Assignment 2
+author: Luis Nicolas Luarte Rodriguez
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+```
+
+
+```{r}
+# load the dataset
+dataSet <- as_tibble(mtcars)
+head(dataSet)
+```
+
+## Compute the following measures for the variable that you selected for plotting in the previous assignment (I used mtcars dataset and the variable 'mpg')
+
+```{r, echo = FALSE}
+d <- mtcars$mpg
+descriptiveStats <- data.frame(Statistics = c("Mean", "Median", "Range",
+					     "Standard Deviation", "Variance",
+					     "Percentile 10", "Percentile 90", 
+					     "Quartile 1", "Quartile 3",
+					     "Inter-quartile range"),
+			      Values = c(mean(d), median(d), rev(range(d)) %>% reduce(`-`), sd(d),
+					 var(d), quantile(d, .10), quantile(d, .90),
+					 quantile(d, .25), quantile(d, .75), IQR(d))
+			      )
+descriptiveStats %>%
+	kable(., "latex", booktabs = T) %>%
+	kable_styling(latex_options = c("striped"), position = "center")
+```
+
+## What is the percentage of the data between the mean +/- 1 std?
+```{r, echo = FALSE}
+lower <- mean(d) - sd(d)
+upper <- mean(d) + sd(d)
+oneSd <- mean(d >= lower & d <= upper)
+twoSd <- mean(d >= lower-sd(d) & d <= upper+sd(d))
+threeSd <- mean(d >= lower-(2*sd(d)) & d <= upper+(2*sd(d)))
+percentOfData <- data.frame(Criteria = c("1 sd", "2 sd", "3 sd"),
+			    Percent = c(oneSd, twoSd, threeSd))
+percentOfData %>%
+	kable(., "latex", booktabs = T) %>%
+	kable_styling(latex_options = c("striped"), position = "center")
+```
+
+## Is the distribution of your data close to a normal distribution?
+If we compare the values obtained with the ones coming from a normal distribution we get the following differences:
+
+```{r, echo = FALSE}
+differences <- data.frame(Normal = c(68.27, 95.45, 99.73),
+			    MPG = c(75, 93, 100),
+			    Difference = c(abs(68.27 - 75.0),
+					   abs(95.45 - 93.0),
+					   abs(99.73 - 100.0)))
+differences %>%
+	kable(., "latex", booktabs = T) %>%
+	kable_styling(latex_options = c("striped"), position = "center")
+```
+
+The differences are quite small, and this is indication that is close enough to a normal distribution
+
+```{r}
+# We can test for normality using the shapiro-wilk test
+shapiro.test(d)
+# The distribution of the data are not significantly different from normal distribution
+```
+
+
+
+
