@@ -10,12 +10,12 @@ csl: /home/nicoluarte/apa.csl
 ## Background
 
 ### 'Hypothalamus plays an essential role in the regulation of feeding behavior'
-	- Ventromedial hypothalamus -> 'satiety center'
-	- Lateral hypothalamus -> 'feeding center'
+- Ventromedial hypothalamus -> 'satiety center'
+- Lateral hypothalamus -> 'feeding center'
 
 ### Author's focus on the arcuate nucleus
-	- Agouticortin related protein (AgRP) -> orexigenic
-	- POMC -> anorexigenic
+- Agouticortin related protein (AgRP) -> orexigenic
+- POMC -> anorexigenic
 
 ### Proposed mechanism
 ![](/home/nicoluarte/Downloads/mechanism.png){ width=80% }
@@ -24,9 +24,9 @@ csl: /home/nicoluarte/apa.csl
 
 ### To test the previous mechanism experimental manipulation of both neuronal system is required
 
-	- POMC and NPY neurons share a common cellular origin
-		- If origin is shared, then traditional transgenic manipulation allow to activate both systems at the same time
-		- Virally mediated instead allows for selective POMC neurons activation
+- POMC and NPY neurons share a common cellular origin
+	- If origin is shared, then traditional transgenic manipulation allow to activate both systems at the same time
+	- Virally mediated instead allows for selective POMC neurons activation
 
 
 ### Model 1: viral POMC-ChR2
@@ -68,4 +68,79 @@ csl: /home/nicoluarte/apa.csl
 ### 'Rapid and robust increase in food intake in Tg POMC-ChR2 mice'
 ![](/home/nicoluarte/Downloads/exptg.png){ width=90% }
 
+- If activating both sets of neurons, at the same time, increases intakes, then the conclusion is that the effect of POMC-neurons is greater than AgRP
 
+## Neuroanatomy
+
+### There seems to be a differentiated network between embryionic POMC-derived neurons and adult POMC
+
+- Arc POMC-derived 
+	- Majority of projections in hypothalamic areas
+	- Lateral hypothalamic nucleus
+
+- Adult Arc POMC-neurons
+	- Median eminence
+	- Nucleus accumbens
+	- Thalamic paraventricular nucleus
+	- ...
+
+- The main point here is to show that they differ in projection patterns
+
+### Following cFos as an inderect measure of activity they found significant differences in activation patterns (following light stimulation)
+
+- Transgenic mice had broader activation areas
+	- PFC
+	- Caudate-putamen
+	- Nucleus accumbens
+	- PVN
+	- Lateral thalamus
+	- ...
+- Viral mice had a more restricted activation
+	- Cerebral cortex
+	- Lateral septum
+	- Dorsomedial hypothalamus
+
+### In pictures ...
+
+![](/home/nicoluarte/Downloads/tgmice.png){ width=20% } ![](/home/nicoluarte/Downloads/viramice.png){ width=20% }
+
+- Left: Transgenic; Right: Viral
+
+## Discussion
+
+### One last result
+
+- A result to tie in things
+	- If effects seen are because of opioids, then blocking them should prevent cFos expression
+		- Upon naloxone this indeed happened
+		- Behavioral results followed
+
+### Feeding reduction in a dose dependent
+![](/home/nicoluarte/Downloads/last.png){ width=90% }
+
+- Light stimulation beta: 1.08
+- Naloxone at 2mg/kg beta: -0.33
+- similar intake between mice
+
+### Using sated versus unsated models
+
+- Light stimulation in sated doesn't generate acute intake increase (Essner et al., 2017) in POMC-neurons
+	- Different baseline for unsated mice
+	- Different light protocol
+
+### Opioid receptor-signaling system is likely to be present
+
+- Other opioids are in play beta-endorphin was correlated with a decrease in intake (in viral mice)
+- But opioid antagonist blocked intake increase
+	- Loss of function evidence
+
+### Increased intake in transgenic mice could be due to rewarding characteristics of food
+- Tg Mice had a broad activation pattern, that included the PFC (and with that dopamine activation)
+- Lateral hypothalamus is related to motivated feeding behavior
+
+### General Conclusions
+
+- POMC-neurons and AgRP-neuron have opposing effects on feeding, however:
+	- This effect is dependent on neuronal projection pathways
+	- Probably nutritionally state-dependent
+	- Opiod systems is likely to be involved in this regulation (beyond analgesic effects of beta-endorphin)
