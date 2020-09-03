@@ -3,56 +3,19 @@ author: Luis Nicolás Luarte Rodríguez
 title: Role of orexin and opioid dynorphin peptides in obesity behavioral dysregulation
 ---
 
-"" why the study of obesity is relevant today
+# Orexin, feeding and foraging
 
-# Obesity health risks
-- Fast growth in modern society
-"" fast rate of growth points that purely biological causes are unlikely
-- Environmental variables are critical in obesity
+# Food-seeking behavior and uncertainty
 
-"" Environmental variables become relevant when they interact with behavior through 'decision making'
+Uncertainty can be understood as a measure of the expectation of the reward prediction error in given environment. This measure of difference between expected reward and current reward is encoded by dopamine neurons [@ZHGB75KH#Bayer_Glimcher_2005]. Furthermore, this system can modify decision-making policies based on the reward-prediction error [@87WR6HV3#Pessiglione_Etal_2006]. Food-seeking behavior, can be conceptualized as series of decision-making actions occurring in an environment with varying grades of uncertainty, where each feeding bout is evaluated by the reward prediction error, and over a history of bouts, uncertainty over environment rewards is obtained.
 
-# Control of feeding behavior
+Under higher uncertainty levels of environment food disposition, animal food-seeking bouts are increased resulting in hoarding-type behavior, arguably as a mechanism to prevent possible starvation [@C6Z374UG#Anselme_Güntürkün_2019]. However, this behavior can also be explained by food scarcity or insufficient energetic supply by the environment. The latter case doesn't necessarily predict uncertainty as this can be high in average, but volatile from time to time. Nevertheless, when feeding environment is altered by constant changes in food position, an increased intake is observed [@NL4XYLRH#Forkman_1993], so food access variability can trigger, by itself, an increased food-seeking behavior. Sign-tracking also increases when uncertainty about reward probabilities also increases [@S8CHV5KG#Anselme_Robinson_Berridge_2013], that is, motivation is increased under uncertainty of reward delivery 
 
 
-The canonical function of leptin is to regulate intake based on energy storage. One of its main routes of action is through the arcuate nucleus (ARC), by interaction with pro-opiomelanocortin (POMC), cocaine and amphetamine regulated transcript (CART), agouti-related peptide (AgRP) and neuropeptide Y (NPY). The basic mechanism involves leptin production proportional to increasing adipose tissue, so when energy reserves are high, circulating leptin levels are also high. Leptin, therefore, signals energy reserves status (fat stores) through leptin receptors present in previously mentioned neurons. Orexigenic neurons (AgRP and NPY) are inhibited and anorexigenic neurons (POMC and CART) activated [@ZYG64WS5#Park_Ahima_2015]
+# Obesogenic environments
 
-- Behavioral controllers of feeding behavior
-	- Value assignment to choice
+# Cafeteria diet and uncertainty
 
-"" How are these behavioral controllers affected by the environmental variables
-
-# Behavioral controllers under the cafeteria diet
-
-< Cafeteria diet is more specific and should be at the last place, outline should follow an inductive fashion
-
-"" If obesity happens in a particular environment, how the behavioral controllers become dysregulated in order to consume more calories than those used
-
-- Definition of cafeteria diet
-- Cafeteria diet induced obesity
-- Decision-making dysregulations in obesity
-	- Temporal discounting
-
-"" What obesity does at the level of behavior should be clear up to this point, now it should state how obesity does this.
-
-# Feeding neurobiology in obesity
-
-"" This section should be the longest
-
-"" State-dependent effects should be reviewed both ways (1) ox/dyn (injection) effect in obese animals; (2) ox/dyn levels in obese animals
-
-"" Site-specific is related to PVN versus Ventral tegmental area
-
-- Orexin and dynorphin regulating hedonic intake
-	- State-dependent effect (obese / non-obese)
-	- Site-specific effect
-
-"" Dyn can ameliorate marked preferences between palatable foods
-
-- Orexin/Dynorphin modulation of food preferences
-	- Modulation of the reward properties of food
-	- Effects on reward systems (reward prediction error)
-
-"" By this point it should be clear how orexin/dynorphin modulate neural activity and how that neural activity is related to the 'behavioral controllers'
+# The decision making problem in obesity
 
 # Conclusions
