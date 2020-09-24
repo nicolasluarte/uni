@@ -1,54 +1,31 @@
-%matplotlib qt
-import time
 import cv2
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import seaborn as sns; sns.set()
-from scipy.stats import norm, gaussian_kde
-from sklearn.neighbors import KernelDensity
-import statsmodels.api as sm
-from fastkde.fastKDE import pdf
-from fastkde import fastKDE
 
-img = cv2.imread('background.png', 0)
-c_img = cv2.imread('rat_background.png', 0)
-flatten_img = img.flatten()
-flatten_c_img = c_img.flatten()
-hist = plt.hist(flatten_img, bins=30, density=True)
-plt.show()
-
-kde = gaussian_kde(flatten_img)
-u = np.linspace(200, 255, 1000)
-v = kde.evaluate(u)
-plt.plot(u, v, 'k')
-plt.show()
-
-plt.imshow(c_img)
-plt.show()
-
-xx = 0
-for x in range(0, 365):
-    for y in range(0, 640):
-        print(kde.evaluate(c_img[x, y]))
-        print(xx)
-        xx += 1
-
-x = np.linspace(200, 255, 233600)[:, np.newaxis]
-flatten_img.shape = (img.size, 1)
-kde = KernelDensity(bandwidth=1.0, kernel = 'gaussian').fit(flatten_img)
-kd_vals = np.exp(kde.score_samples(x))
-
-dens = sm.nonparametric.KDEUnivariate(img.flatten())
-dens.fit()
-kde = gaussian_kde(img.flatten())
+def preprocess_image(image):
+    bilateral_filtered_image = cv2.bilateralFilter(image, 7, 150, 150)
+    gray_image = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
+    return gray_image
 
 
-start = time.time()
-dens.evaluate(c_img.flatten()[0:1000])
-end = time.time()
-print(end - start)
+cap = cv2.VideoCapture('rat.mp4')
+img = cv2.imread('/home/nicoluarte/background.png')
+bg = preprocess_image(img)
+kernel = np.ones((5,5),np.uint8)
 
+while(1):
+    ret, frame = cap.read()
+    frame = preprocess_image(frame)
+    image_sub = cv2.absdiff(bg, frame)
+    close_operated_image = cv2.morphologyEx(image_sub, cv2.MORPH_CLOSE, kernel)
+    _, thresholded = cv2.threshold(close_operated_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    frame = cv2.medianBlur(thresholded, 5)
 
+    fgmask = frame
 
+    cv2.imshow('frame',fgmask)
+    k = cv2.waitKey(0) & 0xff
+    if k == 27:
+        break
 
+cap.release()
+cv2.destroyAllWindows()
