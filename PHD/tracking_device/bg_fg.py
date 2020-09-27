@@ -2,10 +2,11 @@
 import cv2
 import numpy as np
 import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import skfmm
-matplotlib.use('TkAgg')
+import paramiko
 
 """ bilateral filter preserver sharp edges, and smoothes each pixel as a weighted average of intensity values from nerby pixels; this process is used for denoising the image; function returns a gray image with bilateral filtering """
 def preprocess_image(image):
@@ -78,15 +79,44 @@ def body_tracking(image):
     points = [body_points, tail_points, head_points]
     return distance, tail_distance, head_distance, points
 
+"""function to send command to remote pi"""
+def remote_pi_command(ip, port, username, password, command):
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(ip, port=port, username=username, password=password)
+        stdin, stdout, stderr = ssh.exec_command(command)
+        print(stdout.readlines())
+
+    finally:
+        if ssh:
+            ssh.close()
+
+""" starts a remote cam server can be opened with vlc http://192.168.1.117:8000/stream.wmw"""
+def remote_stream(ip, port, username, password):
+    cmd = 'cvlc v4l2:///dev/video0 :v4l2-standard= :input-slave=alsa://hw:0,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2,samplerate=44100}:http{dst=:8000/stream.wmv}"'
+    remote_pi_command(ip, port=port, username=username, password=password, command=cmd)
+
+""" ends the stream by killing vlc """
+def end_remote_stream(ip, port, username, password):
+    cmd = 'pkill vlc'
+    remote_pi_command(ip, port=port, username=username, password=password, command=cmd)
+
+
+
+
 
 
 ### TEST AREA ###
-fg = cv2.imread('/home/nicoluarte/Downloads/foreground.jpeg')
-bg = cv2.imread('/home/nicoluarte/Downloads/background.jpeg')
-final_image = image_full_process(bg, fg)
-body, tail, head, points = body_tracking(final_image)
+# fg = cv2.imread('/home/nicoluarte/Downloads/foreground.jpeg')
+# bg = cv2.imread('/home/nicoluarte/Downloads/background.jpeg')
+# final_image = image_full_process(bg, fg)
+# body, tail, head, points = body_tracking(final_image)
+remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
+end_remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
 
 ### DISPLAY AREA ###
-plt.imshow(head)
-plt.scatter(*zip(*points))
-plt.show()
+# plt.imshow(head)
+# plt.scatter(*zip(*points))
+# plt.show()
+
