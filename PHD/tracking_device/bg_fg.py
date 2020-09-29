@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import skfmm
 import paramiko
+import time, datetime
+from matplotlib.animation import FuncAnimation
 
 """ bilateral filter preserver sharp edges, and smoothes each pixel as a weighted average of intensity values from nerby pixels; this process is used for denoising the image; function returns a gray image with bilateral filtering """
 def preprocess_image(image):
@@ -102,18 +104,61 @@ def end_remote_stream(ip, port, username, password):
     cmd = 'pkill vlc'
     remote_pi_command(ip, port=port, username=username, password=password, command=cmd)
 
+""" takes a picture """
+def take_background(path):
+    cam = cv2.VideoCapture(0)   # should be the infrared cam
+    ret, frame = cam.read()
+    if ret:    # frame captured without any errors
+        cv2.imwrite(path, frame) #save image
+        cam.release()
+
+""" live preview with geodesic distance takes the body as reference """
+def live_preview(cap, bg):
+    ret, frame = cap.read()
+    frame, _, _, _ =  body_tracking(image_full_process(bg, frame))
+    return frame
+
+""" live preview but gets the points """
+def live_points(cap, bg):
+    ret, frame = cap.read()
+    _, _, _, points =  body_tracking(image_full_process(bg, frame))
+    return points
+
+""" function only made to show an animation """
+def update(i):
+    p.set_data(live_preview(cap, bg))
+    n.set_offsets(live_points(cap, bg))
+
+
+""" to see what is being printed into the csv """
+def test(cap, bg, n):
+    for i in range(n):
+        ret, frame = cap.read()
+        _, _, _, points = body_tracking(image_full_process(bg, frame))
+        time_stamp = datetime.datetime.now()
+        f = [time_stamp, points]
+        print(f)
 
 
 
+take_background('/home/nicoluarte/uni/PHD/tracking_device/background.png')
+cap = cv2.VideoCapture(0)
+bg = cv2.imread('/home/nicoluarte/uni/PHD/tracking_device/background.png')
+points = live_points(cap, bg)
+p = plt.imshow(live_preview(cap, bg))
+n = plt.scatter(*zip(*points), marker="x", color="red")
+ani = FuncAnimation(plt.gcf(), update, interval=50)
+plt.show()
+cap.release()
+cv2.destroyAllWindows()
 
+test(cap, bg, 100)
 
 ### TEST AREA ###
-# fg = cv2.imread('/home/nicoluarte/Downloads/foreground.jpeg')
-# bg = cv2.imread('/home/nicoluarte/Downloads/background.jpeg')
 # final_image = image_full_process(bg, fg)
 # body, tail, head, points = body_tracking(final_image)
-remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
-end_remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
+# remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
+# end_remote_stream('192.168.1.117', '22', 'pi', 'dw4yb26f')
 
 ### DISPLAY AREA ###
 # plt.imshow(head)
