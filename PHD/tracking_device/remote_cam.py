@@ -1,7 +1,7 @@
 import socket
 import time
 from imutils.video import VideoStream
-import imagezqm
+import imagezmq
 
 sender = imagezmq.ImageSender(connect_to='192.168.1.100:5555')
 
