@@ -10,7 +10,14 @@ rpi_name = socket.gethostname()
 picam = VideoStream(0).start()
 time.sleep(2.0)
 while True:
-    image = picam.read()
-    sender.send_image(rpi_name, image)
+    try:
+        image = picam.read()
+        sender.send_image(rpi_name, image)
+    except KeyboardInterrupt:
+        picam.release()
+        cv2.destroyAllWindows()
+        print("BYE BYE")
+        break
+
 
 picam.release()
