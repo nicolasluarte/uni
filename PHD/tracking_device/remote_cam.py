@@ -3,7 +3,7 @@ import time
 from imutils.video import VideoStream
 import imagezmq
 
-sender = imagezmq.ImageSender(connect_to='192.168.1.100:5555')
+sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.100:5555')
 
 rpi_name = socket.gethostname()
 picam = VideoStream(0).start()
