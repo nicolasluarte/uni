@@ -7,7 +7,7 @@ import imagezmq
 sender = imagezmq.ImageSender(connect_to='tcp://192.168.1.100:5555')
 
 rpi_name = socket.gethostname()
-picam = VideoStream(0).start()
+picam = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
 while True:
     try:

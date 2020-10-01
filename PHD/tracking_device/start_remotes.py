@@ -18,5 +18,5 @@ for f in data:
             port=f[1],
             username=f[2],
             password=f[3],
-            command = 'python3 /home/pi/uni/PHD/tracking_device/remote_cam.py')
+            command = 'nohup python3 /home/pi/uni/PHD/tracking_device/remote_cam.py </dev/null >command.log 2>&1 &')
     print('DONE')
