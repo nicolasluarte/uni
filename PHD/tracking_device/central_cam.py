@@ -29,5 +29,5 @@ for f in data:
             port=f[1],
             username=f[2],
             password=f[3],
-            command = 'pkill python3')
+            command = 'pkill -f /home/pi/uni/PHD/tracking_device/remote_cam.py')
     print('DONE')
