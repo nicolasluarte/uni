@@ -13,16 +13,20 @@ from matplotlib.animation import FuncAnimation
 
 """ bilateral filter preserver sharp edges, and smoothes each pixel as a weighted average of intensity values from nerby pixels; this process is used for denoising the image; function returns a gray image with bilateral filtering """
 def preprocess_image(image):
-    bl_filter_image = cv2.bilateralFilter(image, 7, 150, 150) # test out parameters
+    bl_filter_image = cv2.bilateralFilter(image, 3, 150, 150) # test out parameters
     gray_image = cv2.cvtColor(bl_filter_image, cv2.COLOR_BGR2GRAY)
     return gray_image
 
 """ the image gets dilated (if one pixel under the kernel is '1' the a determined pixel is also '1') and then followed by erosion (a pixel is 1 if all pixels under the kernel are 1) """
 def postprocess_image(image):
-   kernel = np.ones((15,15), np.uint8) 
+   #kernel = np.ones((17,17), np.uint8) 
+   # ellipse kernel works better
+   kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
    close_operation = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
-   _, thresholded = cv2.threshold(close_operation, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-   blur = cv2.medianBlur(thresholded, 5)
+   _, thresholded = cv2.threshold(close_operation, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+   #blur = cv2.medianBlur(thresholded, 5)
+   # didnt use blur, better results without it
+   blur = thresholded
    return blur
 
 """ takes the bigger contour area, all small areas are considered noise as there's is to be only one animal; it also requires a gray image"""
