@@ -1,0 +1,55 @@
+---
+title: Assignment 4
+author: Luis Nicolas Luarte Rodriguez
+---
+
+```{r}
+#load libs
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(survival, knitr, ggplot2, knitr, kableExtra, tidyverse, My.stepwise)
+```
+
+```{r}
+# load the dataset
+setwd('/home/nicoluarte/uni/PHD/stat_course')
+dataSet <- as_tibble(read.csv('survival65.txt', sep="\t"))
+head(dataSet)
+```
+
+## Run a Cox regression model using all possible predictors. Report and interpret the model
+
+```{r}
+coxModel <- coxph(Surv(TIME, STATUS) ~ ., data = dataSet)
+summary(coxModel)
+```
+
+When considering all possible predictors, only one of theses reaches statistical significance 'log blood urea nitrogen at diagnosis' (LOGBUN), 'hemoglobin at diagnosis' (HGB) is significant at a trend level. Considering this, we can interpret, that adjusting for all included variables, at a given point in time, the expected hazard of dying from multiple myeloma relative to a 1 point increase in LOGBUN, given treatment with alkylating agents, is 6.3 times higher. However, the confidence intervals are quite large (1.7 - 23.1) probably due to small sample size or natural variation in the population. Considering the whole model, the survival predictions are modest with a concordance of 0.675, and compared to a 'null' (intercept only model) the complete model is more informative (likelihood ratio test p=0.04).
+
+## Select the most relevant predictor using forward selection. Report and interpret the model
+
+```{r}
+# Create the null model
+coxNull <- coxph(Surv(TIME, STATUS) ~ 1, data = dataSet)
+coxForward <- step(coxNull, scope = ~ LOGBUN +
+		   HGB +
+		   PLATELET +
+		   AGE +
+		   LOGWBC +
+		   FRACTURE +
+		   LOGPBM +
+		   PROTEIN +
+		   CALCIUM,
+	   direction = "forward", test = "Chisq")
+summary(coxForward)
+```
+
+For the forward model selection I used the Akaike information criterion as it provides an estimate of the goodness of fit, while considering the number of parameters, thus penalizing overfitting. The model selection algorithm first selected LOGBUN, THEN HGB, and tested if increasing the number of variables improved the model. Under AIC or likelihood ratio test, adding more variables increased the amount of information lost, and was not significantly different from the null model, respectively. LOGBUN, in this model, estimated an expected hazard of dying of 5.5 times higher (the full model gave 6.3), whereas HGB (hemoglobin at diagnosis), which got only to trend level in the full model, now estimates that a single point increase in hemoglobin reduces the hazard by a factor of 0.88. Thus, higher hemoglobin levels and lower blood urea nitrogen might be good indicator for myeloma.
+
+```{r}
+# Create the full model
+coxFull <- coxph(Surv(TIME, STATUS) ~ ., data = dataSet)
+coxBackward <- step(coxFull, direction = "backward", test = "Chisq")
+summary(coxBackward)
+```
+
+The backward selection algorithm converged into the same model, so interpretations are identical. Additionally, the concordance is similar to the full model, but with less standard error 0.043 vs 0.051.
