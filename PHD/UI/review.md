@@ -156,8 +156,18 @@ For orexin to modulate the reward function, specifically the prediction error, a
 
 # The obesogenic environment
 
-[@ELZ2PYYM#Mascia_Etal_2019]
-[@DJFPYDKI#Hammond_Etal_2012]
+As discussed before, uncertainty is one of the most relevant features to assess in the environment, because of importance to surivival. Because of its importance animals and modern day humans display a series of strategies to deal with environmental uncertainty, focusing on balancing insurance against scarcity (by increasing body fat deposits), and mobility (lower body weight improves mobility, saving against predation) [@VTI2FVJG#Brunstrom_Cheon_2018]. Sustaining an insurance against scarcity strategy (increasing caloric intake) for prolonged time periods, assuming sufficient caloric availability and equal energetic expenditure, leads to obesity, which is specifically defined by the percentage of body fat [@BFYKZGMM#Bhadoria_Etal_2015]. If such insurance strategy were to only accurately respond to environmental uncertainty, being introduced to a high caloric density environment, should cease such strategy, however, this often no the case. Moreover, caferia-style diets, where standard diet is supplemented with food rich in carbohydrates and/or fats, robustly generates obese animals [@EBJDV6NP#Leigh_Kendig_Morris_2019; @C6PMZNGR#Hariri_Thibault_2010]. Then, how come the 'wrong' strategy arises in food-abundant environments?.
+
+To consider the previous question is useful to look in more detail the composition and effects of obesogenic environments. Drawing from drug-abuse literature results useful because of shared neural mechanisms, and phenotypes with obesity [@AAD8FGG7#Trinko_Etal_2007; @4JUZW55S#GarcíaGarcía_Etal_2014; @VWAZILDA#Filbey_Myers_Dewitt_2012; @HM4RM78V#Noori_CosaLinan_Spanagel_2016; @GDQBDJJ2#Carlier_Etal_2015]. Considering such similarities, experimental evidence shows that prior exposure to uncertainty, measured as variance in food-reward variance in an operant task, generates enhanced nucleus accumbens dopamine activity as usually observed with psychostimulants exposure, and increases amphetamine self-administration compared with groups exposed to certain food delivery [@ELZ2PYYM#Mascia_Etal_2019]. In natural situations, uncertainty, usually, translates to food insecurity, which refers to having food-availability affected by physical, economical or other related factors [@X8KX96JF#Barrett_2010]. Food insecurity has been related to increased BMI in wealthier countries, with higher risk of obesity in women [@4LJKTR3N#Moradi_Etal_2019], the increased association in women has been explained in terms of higher risk when having lower energetic reserves [@A9R3LNZJ#Nettle_Andrews_Bateson_2017]. However, how the association is present in wealthier countries results of more interest to consider obesogenic environments. A simple explanation considers that wealthier countries have more readily access to food, so uncertainty-derived motivation to eat leads to effectively eating more [@A9R3LNZJ#Nettle_Andrews_Bateson_2017].
+
+CONSIDER THIS PAPERS
+
+the context is considered when taking decisions...[@UINS58Q4#Tymula_Plassmann_2016]
+past experiences affect how things are valued [@4YU7F96V#Khaw_Glimcher_Louie_2017]
+reward magnitude modulates learning rate [@MYWY9LWC#Wu_Etal_2017]
+low reward past experience -> higher learning rate -> converge to different values -> caloric intake surplus [@DJFPYDKI#Hammond_Etal_2012]
+
+[@3ITBQT73#Hall_Hammond_Rahmandad_2014] <- ?
 
 
 # Conclusion
