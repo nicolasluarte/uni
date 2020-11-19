@@ -1,0 +1,103 @@
+---
+title: Assignment 3
+author: Luis Nicolas Luarte Rodriguez
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(survival)
+```
+
+
+```{r}
+# load the dataset
+setwd('/home/nicoluarte/uni/PHD/stat_course')
+dataSet <- as_tibble(read.csv('survival65.csv', sep="\t"))
+head(dataSet)
+```
+
+# Use the Kaplan Meier method to estimate the distribution of survival time for the total sample.
+
+## a) Plot the Kaplan Meier curve for the total sample.
+
+```{r}
+s <- Surv(time=dataSet$TIME, event=dataSet$STATUS)
+plot(s,
+     main = 'Kaplan Meier curve',
+     xlab = 'Survival time in months from diagnosis',
+     ylab = 'Survival probability',
+     mark.time=TRUE)
+```
+
+## b) What is the mean survival time and standard error?
+
+```{r}
+estimate <- survfit(s ~ 1)
+print(estimate, print.rmean=TRUE)
+```
+Mean survival is 32.15 and its standard error 3.99
+
+## c) What is the median survival time and 95% CI?
+```{r}
+print(estimate)
+```
+The median survival time is 19 and its confidence interval at 95% (15 - 37)
+
+## d) How many censored observations are there?
+```{r}
+# as per the data set description a status of 0 means censored
+# then
+sum(dataSet['TIME'] == 0)
+# defines the number of censored observations
+```
+17
+
+# Using the Kaplan Meier method to estimate whether fracture influences survival time.
+
+## a) Plot on Kaplan Meier curve for the patients with fracture and another one for the patients without fracture
+```{r}
+# create to data sets
+fractureYes <- dataSet %>% filter(FRACTURE == 1)
+fractureYesS <- Surv(time=fractureYes$TIME, event=fractureYes$STATUS)
+fractureNo <- dataSet %>% filter(FRACTURE == 0)
+fractureNoS <- Surv(time=fractureNo$TIME, event=fractureNo$STATUS)
+plot(fractureYesS,
+     main = 'Kaplan Meier curve fracture',
+     xlab = 'Survival time in months from diagnosis',
+     ylab = 'Survival probability',
+     mark.time=TRUE)
+plot(fractureNoS,
+     main = 'Kaplan Meier curve NO fracture',
+     xlab = 'Survival time in months from diagnosis',
+     ylab = 'Survival probability',
+     mark.time=TRUE)
+```
+
+## b) What is the median survival time and 95% CI in each group?
+```{r}
+yesEst <- survfit(fractureYesS ~ 1)
+noEst <- survfit(fractureNoS ~ 1)
+print(yesEst)
+print(noEst)
+```
+For the fracture group: median = 19, CI = (14, 41). For the no fracture group: median = 18, CI = (17, infinity)
+
+## c) Interpret the Log Rank test and the survival curves.
+```{r}
+# Log Rank test
+survdiff(Surv(time=dataSet$TIME, event=dataSet$STATUS) ~ dataSet$FRACTURE)
+```
+The log-rank test considers the survival function from each subdivision (fracture or not), and test the hypothesis that there's no difference in such function. Tested under the Chi squared distribution, the difference between the expected values are non-significant p = 0. Given that, the interpretation is the estimation of the survival function does not differ given the fracture/no fracture condition, and as such, the expected survival is not affected by having a fracture.
+```{r}
+plot(survfit(Surv(time=dataSet$TIME, event=dataSet$STATUS) ~ dataSet$FRACTURE), main = "Survival curves given fracture status", xlab = 'Survival time in months from diagnosis', ylab='Survival probability', col=c('blue', 'red'))
+legend("topright", legend=c("Non-Fractured", "Fractured"), fill=c("blue", "red"), bty="n")
+```
+If curves are observed, while they follow the same "shape" is clear that no-fracture group lacks resolution because of having less observations. However, up to the last observation, there's is a big gap with no observations, and thus the estimated survival function can be misleading, this can be supported by the big confidence intervals for the no-fracture group.
+
+
+
+
