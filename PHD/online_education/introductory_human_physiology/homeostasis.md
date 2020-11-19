@@ -98,3 +98,72 @@
 - growth hormone -> released during early sleep
 - cortisol -> increases just before waking up
 - dictated by sleep/wake, not by light/dark
+
+# transporters pumps & channels
+
+## simple diffusion & gap junctions
+- flux: random movement of molecules across a surface per unit time
+	- simple diffusion
+- gap junctions: permits diffusion of ions between coupled cells
+
+### characteristic of simple diffusion
+- from high to low concentration
+- no energy
+- rapidly over short distance, slow over long distances
+- continues until equilibrium is reached
+- directly related to temperature
+- inversely related to the size of the molecule
+- is dependent on the total surface area and thickness of the membrane barrier
+
+### facilitated diffusion
+ - not lipo-soluble, charged molecules, can't move through the plasma membrane through simple diffusion
+ - integral membrane protein
+ 	- can change conformation to external or internal cellular space
+	- glucose transporters -> net flux determined by gradient
+![Flux: simple vs facilitated](/home/nicoluarte/flux.png)
+- co-transporters
+	- move more than one solute at any time
+	- symporter -> move in same direction
+	- antiporter -> move in different directions
+- channels
+	- aquaporine -> move water across the membrane
+	- regulated opening is called gating
+		- if opened movement is due to diffusion
+	- gating of channels
+		- ligand gating
+			-requires binding of specific chemical to open
+		- voltage
+			- requires specific gradient of electrical charge
+		- mechanical
+			- requires specific tension to open
+- pump mediate active transport
+	- pumps actively moves solute against concentration gradient
+	- pumps are ezyme, cleave atp -> undergo different conformation
+- transcellular transport
+	- movement across the cell into the bloodstream
+	- secondary active transport
+		- transporter in the basal and apical side
+		- glucose transported by the sodium Na+ gradient, 'free ride'
+- general concepts
+	- movement across the bi lipid layer is dependent in size, charge and solubility
+	- net flux determined by gradient
+	- permeable solute crosses the membrane by simple diffusion, moving down its concentration gradient
+	- a non-permeable solute cross the membrane by facilitated diffusion, requires gradient, specific, and its saturable
+	- primary active transport moves a solute against its concentration gradient, requires ATP, specific, and is saturable
+	- secondary active transport couples the activity of a co-transporter with a pump. This is used for transcellular transport of a solute.
+
+# effective solutes & water transport
+- concentration of water
+	- osmosis
+		- change in compartment size when membrane is impermeable to solute
+		- occurs by diffusion only
+		- uses aquaporin channels
+		- has highest concentration when pure water
+- important terms
+	- molarity:  mole/vol (1 mole = 6 x 10^23 molecules)
+	- osmolarity: (#molecule/vol) * (# particles/molecule)
+	- osmolality: kg of water
+- tonicity & cell volume
+	- always comparative
+	- # non-penetrating molecules/volume
+- changes in body fluid compartements
