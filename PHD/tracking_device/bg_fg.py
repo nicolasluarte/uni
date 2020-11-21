@@ -11,17 +11,17 @@ import time, datetime
 from matplotlib.animation import FuncAnimation
 
 
-""" bilateral filter preserver sharp edges, and smoothes each pixel as a weighted average of intensity values from nerby pixels; this process is used for denoising the image; function returns a gray image with bilateral filtering """
-def preprocess_image(image):
-    bl_filter_image = cv2.bilateralFilter(image, 3, 150, 150) # test out parameters
+
+def preprocess_image(image, d, sigma1, sigma2):
+    bl_filter_image = cv2.bilateralFilter(image, d, sigma1, sigma2) # test out parameters
     gray_image = cv2.cvtColor(bl_filter_image, cv2.COLOR_BGR2GRAY)
     return gray_image
 
 """ the image gets dilated (if one pixel under the kernel is '1' the a determined pixel is also '1') and then followed by erosion (a pixel is 1 if all pixels under the kernel are 1) """
-def postprocess_image(image):
+def postprocess_image(image, kx, ky):
    #kernel = np.ones((17,17), np.uint8) 
    # ellipse kernel works better
-   kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+   kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(kx,ky))
    close_operation = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
    _, thresholded = cv2.threshold(close_operation, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
    #blur = cv2.medianBlur(thresholded, 5)
@@ -38,18 +38,18 @@ def contour_extraction(image):
 
 
 """ outputs the difference between the background and background + animal, so animal can be isolated """
-def bgfg_diff(background, foreground):
-    bg = preprocess_image(background)
-    fg = preprocess_image(foreground)
+def bgfg_diff(background, foreground, d, sigma1, sigma2):
+    bg = preprocess_image(background, d, sigma1, sigma2)
+    fg = preprocess_image(foreground, d, sigma1, sigma2)
     diff = cv2.absdiff(bg, fg)
     return diff
 
 """ this function does all the pipeline """
-def image_full_process(background, foreground):
+def image_full_process(background, foreground, d, sigma1, sigma2, kx, ky):
     # convert rgb to gray scale
-    diff = bgfg_diff(foreground, background)
+    diff = bgfg_diff(foreground, background, d, sigma1, sigma2)
     # post process the difference to remove noise
-    diff_postproc = postprocess_image(diff)
+    diff_postproc = postprocess_image(diff, kx, ky)
     # extract the biggest contour area and paste it in an empty canvas
     final_image = contour_extraction(diff_postproc)
     return final_image

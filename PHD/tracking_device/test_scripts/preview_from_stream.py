@@ -5,6 +5,7 @@ from bg_fg import *
 import os
 import glob
 import csv
+import socket
 
 
 """ function only made to show an animation """
@@ -25,13 +26,17 @@ cap.release()
 cv2.destroyAllWindows()
 
 """ read from virtual camera and write to csv """
+# csv label, so every record is distinct
+label = str(socket.gethostname()) + "_" + \
+        datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 bg = cv2.imread('/home/nicoluarte/Downloads/background.jpeg')
 cap = cv2.VideoCapture(2)
-with open('../csv_bak/log.csv', 'w') as f:
+with open('../csv_bak/' + label + '.csv', 'w') as f:
     writer = csv.writer(f)
+    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "body_x", "body_y", "tail_x", "tail_y", "head_x", "head_y"])
     while(True):
         points = live_points(cap, bg)
-        time_stamp = datetime.datetime.now().strftime("%y %m %d %H %M %S %f")
+        time_stamp = datetime.datetime.now().strftime("%Y %m %d %H %M %S %f")
         log = list(map(int, time_stamp.split())) + [item for i in points for item in i]
         writer.writerow(log)
 cap.release()
