@@ -1,6 +1,5 @@
 #!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 import sys
-sys.path.append('$HOME/uni/PHD/tracking_device/bg_fg.py')
 from bg_fg import *
 import os
 import glob
