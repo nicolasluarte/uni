@@ -1,9 +1,6 @@
 #!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 import cv2
 import numpy as np
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import skfmm
 import paramiko
