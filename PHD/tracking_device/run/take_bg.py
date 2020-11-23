@@ -17,15 +17,13 @@ if __name__ == '__main__':
     parserArg.add_argument('-d', '--file_dest', type=str, help='destination of background')
     parserArg.add_argument('-c', '--capture', type=int, help='set the camera stream vide0 as default')
     args = parserArg.parse_args()
-
-
     # set defaults or user specified
     # set background folder
     hostname = os.popen('hostname').read().rstrip('\n')
     if args.file_dest is not None:
         path = str(args.file_name) + '/bg_' + hostname + '.png'
     else:
-        path = '../background/bg_' + hostname + '.png'
+        path = '/home/nicoluarte/uni/PHD/tracking_device/background/bg_' + hostname + '.png'
     # set cam
     if args.capture is not None:
         cap = int(args.capture)
