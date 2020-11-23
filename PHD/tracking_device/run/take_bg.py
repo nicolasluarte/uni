@@ -8,6 +8,7 @@ import socket
 import argparse
 from configparser import ConfigParser
 from time import time as timer
+from os.path import expanduser
 
 
 if __name__ == '__main__':
@@ -19,11 +20,13 @@ if __name__ == '__main__':
     args = parserArg.parse_args()
     # set defaults or user specified
     # set background folder
+    home = expanduser("~")
     hostname = os.popen('hostname').read().rstrip('\n')
+    repo = '/uni/PHD/tracking_device/'
     if args.file_dest is not None:
         path = str(args.file_name) + '/bg_' + hostname + '.png'
     else:
-        path = '/home/nicoluarte/uni/PHD/tracking_device/background/bg_' + hostname + '.png'
+        path = str(home) + repo + '/background/bg_' + hostname + '.png'
     # set cam
     if args.capture is not None:
         cap = int(args.capture)
