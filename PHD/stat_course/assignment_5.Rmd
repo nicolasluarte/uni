@@ -1,0 +1,126 @@
+---
+title: Assignment 5
+author: Luis Nicolas Luarte Rodriguez
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, results = "hide",
+warning=FALSE, message=FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
+```
+
+
+```{r}
+#load libs
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(survival, knitr, ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt)
+```
+
+```{r}
+# load the dataset
+setwd('/home/nicoluarte/uni/PHD/stat_course')
+dataSet <- as_tibble(read.csv('ENS.csv', sep=","))
+head(dataSet)
+```
+
+# 1. Begin by examining the ENS 2016-17 database, measured variables, number of subjects examined, missing data
+
+## a. What is the percentage of missing data for each of the variables that appear in table 1. Remove all subjects for which HDL value is missing. What is now the percentage of missing data for each of the variables? From now on we will work with this subset of data.
+
+```{r}
+# first I correct to the correct datatype
+dataSetClean <- dataSet %>%
+	mutate_at(vars(-'Sexo'), as.numeric) %>%
+	mutate_at(vars('Sexo'), as.factor)
+
+# then I get the percentage of NA
+naPercentage <- dataSetClean %>% map(~ mean(is.na(.)) * 100)
+
+# remove NA values in HDL
+dataSetFinal <- dataSetClean %>%
+	drop_na(Colesterol_HDL)
+# get percentage of missing data
+naPercentageFinal <- dataSetFinal %>%
+	map(~ mean(is.na(.)) * 100)
+
+initial <- melt(data.frame(naPercentage))
+final <- melt(data.frame(naPercentageFinal))
+plotDf <- melt(data.frame(x = initial$variable, y1=initial$value, y2=final$value))
+
+# plot the differences
+
+ggplot(plotDf, aes(x=x, y=value, colour=variable)) +
+	geom_point() +
+	geom_line(aes(group=x)) +
+	labs(title = "NA percentage change") +
+	xlab("Variables") +
+	ylab("NA percentage") +
+	theme_minimal() + 
+	theme(legend.position = "none") +
+	theme(axis.text.x = element_text(angle=90))
+
+```
+\newpage
+
+## b. Plot matrix of scatterplots for the value of each of the 10 relevant variables similar to the figure 2, assigning a different color to each of the subjects depending on their class regarding the RCV (recommendation: use the command gplotmatrix). Include the name of the variables in the diagonal and increase the size of the point if the graph with the default point size cannot be apreciated.
+
+```{r}
+pairs(dataSetFinal[,2:12],
+      col=as.factor(dataSetFinal$RCV_CHILENO_RECODIFICADO),
+pch=3)
+```
+
+\newpage
+
+## c. Interpret the results of the scatterplots. Can you identify at first glance the variables with greater separation between the different categories? Can you identify correlations between some of the variables?
+
+At first glance glucose seems to separate most of the variables, higher levels of glucose are associated with cardiovascular risk '3' (likely, higher risk of cardiovascular failure). Thus, glucose is associated with higher cardiovascular risk. Age also separate data quite clearly, older people score, more frequently, '3' in cardiovascular risk. As for correlations, systolic and diastolic blood pressure show the highest correlation; both type of cholesterol show a similar trend; age and sys/diastolic blood pressure show a positive correlation, but weaker than the previously mentioned. Regarding negative correlations, a weak one is the present between HDL cholesterol and IMC.
+
+# 2. Build a linear regression model to predict the systolic blood pressure
+
+## a. Use a multiple linear regression model with age, sex, BMI, glucose, total cholesterol, HDL cholesterol, alcohol and tobaco consumption as predictors and present the results including the confidence interval for the parameters and the value of $R^2$ (variance explained by the model). Explain how you are handling missing data.
+
+```{r}
+# check multiple linear regression assumptions
+# linear relationship between dependent and independent variables
+dataModel <- dataSetFinal %>%
+	drop_na() %>%
+	select(m2p11a_PAS, Edad, Sexo, IMC, Glucosa, Colesterol_HDL, Colesterol_Total, m7p3, ta3)
+
+# plot against every predictor
+dVars <- colnames(dataModel)[-1]
+pData <- function(x) {
+	ggplot(dataSetFinal, aes(x=.data[[x]], y=m2p11a_PAS)) +
+	geom_point() +
+	geom_smooth(method='loess', aes(group="1")) +
+	theme_minimal()
+}
+plots <- dVars %>% map(~ pData(.x))
+ggarrange(plotlist=plots)
+
+# relationships are somewhat linear, no clearly curvilinear relationship detected
+
+# fit the model
+mdl <- lm(data=dataModel, m2p11a_PAS ~ .)
+summary(mdl)
+```
+
+```{r out.width = '40%'}
+fit_stats <-
+  broom::glance(mdl) %>%
+  select(`R<sup>2</sup>` = r.squared, AIC) %>%
+  mutate_all(function(x) style_sigfig(x, digits = 3)) %>%
+  {paste(names(.), ., sep = " = ", collapse = "; ")}
+# generate table with results
+tbl_regression(mdl) %>%
+	as_gt() %>%
+	gt::tab_source_note(gt::html(fit_stats)) %>%
+	gt::gtsave(filename="model_table.png")
+```
+All rows containing 1 or more missing values were eliminated to fit the model.
+
+## b. Interpret the results obtained: what are the variables that have significant contribution to the model? Was this result expected?
+
+In general the model does not fit data very well, r squared measure of fit is below 0.3. Thus, only about 30% of the variance is explained by the model. Only age, sex, BMI, HDL, and total cholesterol reach statistical significance. Among significant covariates, the model predicts that systolic blood pressure increase as one gets older ($\beta = 0.37$, $p = <0.001$). The same relationship is followed by BMI ($\beta = 0.43$, $p = <0.001$), and to a lesser extent by HDL and total cholesterol $\beta = 0.06$ and $\beta = 0.02$, respectively. As for sex, code '2' (possibly female), shows a reduction in systolic blood pressure compared with code '1' ($\beta = -6.4$, $p = <0.001$), this is the strongest predictor for systolic pressure. I was expecting a better fit, mostly regarding cholesterol as is typically associated with blood pressure problems. Perhaps this relationship is heavily attenuated when controlling for all the other variables.
+
+## c. How does a linear regression model predict the systolic blood pressure? Comment the results.
+As previously stated the model does not provide a good fit. Sex was one of the most significant covariates, which make sense because between the variables included it refers directly to genetic differences. BMI is somewhat controlled between males and females because it considers height, which is, typically, a variable that is quite different between males and females. The other variables are likely to be related to life-style choices, which should not be so different between males and females. Finally, the low r squared might be related to systolic blood pressure not being a very accurate measure, because of daily fluctuations.
