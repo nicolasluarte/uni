@@ -1,4 +1,4 @@
-#!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
+#!/usr/bin/python3
 import sys
 sys.path.append('../')
 from bg_fg import *
