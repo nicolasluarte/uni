@@ -110,8 +110,8 @@ def end_remote_stream(ip, port, username, password):
     remote_pi_command(ip, port=port, username=username, password=password, command=cmd)
 
 """ takes a picture """
-def take_background(path):
-    cam = cv2.VideoCapture(0)   # should be the infrared cam
+def take_background(path, capture):
+    cam = cv2.VideoCapture(capture)   # should be the infrared cam
     ret, frame = cam.read()
     if ret:    # frame captured without any errors
         cv2.imwrite(path, frame) #save image
