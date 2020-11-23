@@ -1,6 +1,6 @@
-#!/usr/bin/python3
+#!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 import sys
-sys.path.append('../')
+sys.path.append('$HOME/uni/PHD/tracking_device/')
 from bg_fg import *
 import os
 import glob
