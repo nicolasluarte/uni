@@ -20,10 +20,11 @@ if __name__ == '__main__':
 
 # set defaults or user specified
 # set background folder
+hostname = os.popen('hostname').read().rstrip('\n')
 if args.file_dest is not None:
-    path = str(args.file_name) + '/bg_' + str(os.system('hostname')) + '.png'
+    path = str(args.file_name) + '/bg_' + hostname + '.png'
 else:
-    path = '../background/bg_' + str(os.system('hostname')) + '.png'
+    path = '../background/bg_' + hostname + '.png'
 # set cam
 if args.capture is not None:
     cap = int(args.capture)
