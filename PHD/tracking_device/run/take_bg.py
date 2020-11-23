@@ -11,6 +11,7 @@ from time import time as timer
 
 
 if __name__ == '__main__':
+    print("HELLO")
     # read the arguments
     parserArg = argparse.ArgumentParser(description='take background picture')
     parserArg.add_argument('-d', '--file_dest', type=str, help='destination of background')
