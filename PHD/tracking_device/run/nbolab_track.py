@@ -70,7 +70,7 @@ with open('../csv_bak/' + label + '.csv', 'w') as f:
         # read a single frame
         ret, frame = cap.read()
         # process the image
-        _, _, _, points = body_tracking(image_full_process(
+        fp, _, _, points = body_tracking(image_full_process(
             background=bg,
             foreground=frame,
             d=parser.getint('preprocess', 'filter_size'),

@@ -115,15 +115,15 @@ def take_background(path, capture):
         cam.release()
 
 """ live preview with geodesic distance takes the body as reference """
-def live_preview(cap, bg):
+def live_preview(cap, body_track):
     ret, frame = cap.read()
-    frame, _, _, _ =  body_tracking(image_full_process(bg, frame))
+    frame, _, _, _ =  body_track
     return frame
 
 """ live preview but gets the points """
-def live_points(cap, bg):
+def live_points(cap, body_track):
     ret, frame = cap.read()
-    _, _, _, points =  body_tracking(image_full_process(bg, frame))
+    _, _, _, points =  body_track
     return points
 
 """ function only made to show an animation """
