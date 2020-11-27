@@ -85,5 +85,69 @@
 ## saltatory conduction
 - large diameter, myelinated axons transmit action potential very rapidly
 - voltage gated channels are concentrated at the nodes
-- inactivation of voltage gated na+ channels insures uni-directional propagation along the axon
-	
+- inactivation of voltage gated na+ channels insures uni-directional propagation along the axon	
+
+# the nervous system methods of communications
+
+## chemical synapse
+- action potential goes down the axon
+	- at end of axon -> voltage gates Ca2+ channels
+	- calcium enter the axon terminus -> acts as a signal to vesicles to fuse with the plasma membrane
+	- neurotransmiters into the synaptic cleft
+- can do re-uptake or degrade neurotransmiter
+
+## excitatory and inhibitory synapses
+- EPSP -> graded depolarization due to influx of positive ions
+- IPSP -> graded hyperpolarization due to net influx of negative ions, efflux of positive ions
+
+## neuronal netwoks
+- divergent -> one neuron can control to multiple secondary neurons
+- convergent -> multiple neurons control a single secondary neuron
+- lateral inhibition
+	- inhibiting their neighbours
+
+## cholinergic synapses
+- acetylcholine (ACh) <- neurotransmiter
+	- two type of receptors
+		- nicotinic-ligand gated ion channel
+			- skeletal muscle and brain
+		- muscarinic-G protein coupled
+			- heart, smooth muscle, glands, brain
+
+## adrenergic synapses (tyrosine based)
+	- catecholamines
+		- norepinephrine
+		- epinephrine
+	- receptor g-protein coupled
+		- alpha
+		- beta
+
+# the nervous system organization
+- peripheral nervous system <- afferent portion <- inputs
+- efferent <- output to muscle or to do an action, cause the response
+- CNS
+	- somatic
+		- efferent
+	- autonomic
+		- efferent
+		- enteric
+		- parasympathetic
+		- sympathetic
+
+## pns output
+- somatic 
+	- single neuron out to the muscle -> acetylcholine
+		- bind to nicotinic AChR 
+- autonomic
+	- two neurons in series
+- parasympathetic NS
+	- first neuron acetylcholine + nicotinic R
+	- second neuron acetylcholine + muscarininc R
+- sympathetic
+	- first neuron
+		- acetylcholine + nicotinic R
+	- second neuron
+		- norepinephrine + adrenergic R
+- sympathetic
+	- synpasis with adrenal gland 
+		- release epinephrine to blood + bind to adrenergic receptors
