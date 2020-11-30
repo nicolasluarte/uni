@@ -97,7 +97,7 @@ Given such values the most likely class is '2', meaning a person with such chara
 a. Use the Matlab Classification Learner App (or similar) to build the three models with all the predictors using 5-fold cross validation and report the accuracy obtained.
 
 ```{r}
-# discriminant analysis
+#discriminant analysis
 head(dataFinal)
 # center and scale data
 preproc <- c("center", "scale")
@@ -187,10 +187,19 @@ c. Obtain also the ROC curve and the area under the curve (AUC) choosing one of 
 ```{r}
 svmP <- ordered(SVMmdl$pred$pred, levels=c('1','2','3'))
 svmMulti <- multiclass.roc(predictor=svmP, response=SVMmdl$pred$obs)
+ldaP <- ordered(LDAmdl$pred$pred, levels=c('1','2','3'))
+ldaMulti <- multiclass.roc(predictor=ldaP, response=LDAmdl$pred$obs)
+treeP <- ordered(TREEmdl$pred$pred, levels=c('1','2','3'))
+treeMulti <- multiclass.roc(predictor=treeP, response=TREEmdl$pred$obs)
 svmRs <- svmMulti[['rocs']]
-plot.roc(svmRs[[1]])
-sapply(2:length(svmRs), function(i) lines.roc(svmRs[[i]], col=i))
-legend("topright", c("Low", "Moderate", "High"), lty=1, col = c(1, 2, 3), bty="n")
-
+ldaRs <- ldaMulti[['rocs']]
+treeRs <- treeMulti[['rocs']]
+svmRocs <- list("Class 1 vs 3" = svmRs[[1]], "Class 1 vs 2" = svmRs[[2]], "Class 3 vs 2" = svmRs[[3]])
+svmAUC <- list("Class 1 vs 3" = auc(svmRs[[1]]), "Class 1 vs 2" = auc(svmRs[[2]]), "Class 3 vs 2" = auc(svmRs[[3]]))
+ldaRocs <- list("Class 1 vs 3" = ldaRs[[1]], "Class 1 vs 2" = ldaRs[[2]], "Class 3 vs 2" = ldaRs[[3]])
+treeRocs <- list("Class 1 vs 3" = treeRs[[1]], "Class 1 vs 2" = treeRs[[2]], "Class 3 vs 2" = treeRs[[3]])
+ggroc(svmRocs, aes="linetype", legacy.axes=TRUE) + geom_abline() +
+	theme_classic() +
+	labs(linetype="Comparisons")
 
 ```
