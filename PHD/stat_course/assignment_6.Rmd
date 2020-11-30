@@ -13,7 +13,7 @@ warning=FALSE, message=FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 ```{r}
 #load libs
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(survival, knitr, ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot, nnet, mlogit, xtable)
+pacman::p_load(ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot, nnet, mlogit, xtable, generics, caret, rlist, pROC)
 ```
 
 ```{r}
@@ -30,6 +30,7 @@ a. Use a multiclass logistic regression model with all predictors and present th
 
 ```{r}
 # recode variables
+# and drop rows with at least 1 NA
 dataFinal <- dataSet %>% type_convert(cols(
 			      Sexo = col_factor(),
 			      Glucosa = col_double(),
@@ -91,9 +92,105 @@ stargazer(probs, summary=FALSE, title='Category probability')
 
 Given such values the most likely class is '2', meaning a person with such characteristics would be categorized, by the model, as 'moderate' cardiovascular risk. Which is expected as most positive coefficients were elevated in this simulated person.
 
+2. Build a model based on discriminant analysis, another on support vector machines and another on trees to predict the cardiovascular risk obtained by the classification described above (low risk = 1, moderate risk = 2 and high risk = 3)
+
+a. Use the Matlab Classification Learner App (or similar) to build the three models with all the predictors using 5-fold cross validation and report the accuracy obtained.
+
+```{r}
+# discriminant analysis
+head(dataFinal)
+# center and scale data
+preproc <- c("center", "scale")
+# setup cross validation
+control <- trainControl(method="cv", number=5, savePredictions=TRUE)
+# setup accuracy as metric
+performance_metric <- "Accuracy"
+LDAmdl <- train(RCV_CHILENO_RECODIFICADO ~ .,
+		data = dataFinal %>% select(-c(IdEncuesta)),
+		metric = performance_metric,
+		trControl = control,
+		preProcess = preproc,
+		method = "lda"
+		)
+# support vector machine
+# parameter C was optimized to render maximum accuracy
+SVMmdl <- train(RCV_CHILENO_RECODIFICADO ~ .,
+		data = dataFinal %>% select(-c(IdEncuesta)),
+		metric = performance_metric,
+		trControl = control,
+		preProcess = preproc,
+		method = "svmLinear",
+		tuneGrid = expand.grid(C = seq(0.1, 2, length = 50))
+		)
+# tree model
+# complexity parameter optimized to render maximum accuracy
+TREEmdl <- train(RCV_CHILENO_RECODIFICADO ~ .,
+		data = dataFinal %>% select(-c(IdEncuesta)),
+		metric = performance_metric,
+		trControl = control,
+		preProcess = preproc,
+		method = "rpart",
+		tuneLength = 10
+		)
+results <- resamples(list(LDA = LDAmdl, SVM = SVMmdl, TREE = TREEmdl))
+values <- as.data.frame(summary(results)$statistics$Accuracy)$Mean
+title <- paste("LDA: ", round(values[1], 2),
+	       "SVM: ", round(values[2], 2),
+	       "TREE: ", round(values[3], 2), sep=" ")
+ggplot(results) +
+	labs(y = 'Accuracy',
+	     title = title) +
+	theme_linedraw() +
+	theme(plot.title = element_text(size=5))
+ggsave('accuracy.png',
+       plot = last_plot(),
+	width=7,
+	height=7,
+	units=c("cm"))
+```
+![Accuracy values for the three models](accuracy.png)
+
+b. Obtain the confusion matrix and the percentage of true positives and false negatives for each class (for more than two classes this definition is quite ambiguous so just report the percentage of data classified correctly and the percentage of data classified incorrectly for each class). Compare the results of the three models.
+
+```{r, results='asis'}
+treeCM <- confusionMatrix(TREEmdl)$table
+svmCM <- confusionMatrix(SVMmdl)$table  
+ldaCM <- confusionMatrix(LDAmdl)$table
+cmList <- list(TREE = treeCM,
+	       SVM = svmCM,
+	       LDA = ldaCM)
+
+# correctly classified data per class
+goodPerc <- 1:3 %>% map(function(x) list(cmList[[x]]['1','1'], cmList[[x]]['2','2'], cmList[[x]]['3','3'])) %>%
+			list.stack() %>%
+			rename(Low=V1, Moderate=V2, High=V3) %>%
+			mutate(Model=names(cmList)) %>% 
+			relocate(Model)
+
+# incorrectly classified data per class
+badPerc <- 1:3 %>% map(function(x) list(sum(cmList[[x]]['1',c('2','3')]),
+			     sum(cmList[[x]]['2',c('1','3')]),
+			     sum(cmList[[x]]['3',c('1','2')]))) %>%
+			list.stack() %>%
+			rename(Low=V1, Moderate=V2, High=V3) %>%
+			mutate(Model=names(cmList)) %>%
+			relocate(Model)
+
+stargazer(goodPerc, summary=FALSE, title='Correct classification per Model per Class')
+stargazer(badPerc, summary=FALSE, title='Incorrect classification per Model per Class')
+```
+
+All models correct and incorrect classifications are quite similar across all possible classes.
+
+c. Obtain also the ROC curve and the area under the curve (AUC) choosing one of the classes as the positive class (you can use the one you want, just explain which one you chose). Compare the results of the three models.
+
+```{r}
+svmP <- ordered(SVMmdl$pred$pred, levels=c('1','2','3'))
+svmMulti <- multiclass.roc(predictor=svmP, response=SVMmdl$pred$obs)
+svmRs <- svmMulti[['rocs']]
+plot.roc(svmRs[[1]])
+sapply(2:length(svmRs), function(i) lines.roc(svmRs[[i]], col=i))
+legend("topright", c("Low", "Moderate", "High"), lty=1, col = c(1, 2, 3), bty="n")
 
 
-
-
-
-
+```
