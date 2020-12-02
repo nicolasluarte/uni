@@ -13,7 +13,7 @@ warning=FALSE, message=FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 ```{r}
 #load libs
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot, nnet, mlogit, xtable, generics, caret, rlist, pROC)
+pacman::p_load(ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot, nnet, mlogit, xtable, generics, caret, rlist, pROC, gridExtra)
 ```
 
 ```{r}
@@ -58,27 +58,26 @@ mdl <- mlogit(RCV_CHILENO_RECODIFICADO ~ 1 | Edad +
 	       m7p3 +
 	       ta3 +
 	       IMC, data = mdlData, reflevel="1")
-summary(mdl)
 stargazer(summary(mdl)$CoefTable, title='Model results')
 ```
 
 b. Interpret the results obtained. What are the variables that have a significant contribution to the model? Was this result expected?
 
-First the full model coefficients are significantly different from the null model (Log-likelihood = -1524.5; $\chi^2 = 1681.1$; p = < 0.001). Predictive ability of the model is modest with McFadden $R^2$ = 0.355. As for coefficients, all were significant in the model, except for smoking and alcohol consumption. Coeffients are reported with coronary risk score '1' = low risk as reference. Considering age, we see a positive estimate for class '2' = moderate and class '3' = high risk, meaning that being older is more predictive of a higher coronary risk. More precisely, being 1 year older, increases the multinomial log-odds for coronary risk, relative to '1', would decrease by 0.029 and 0.08, for class '2' and '3', respectively. For sex, the comparison is female (Sexo1) against male (Sexo2), with negative coefficients meaning that females are less likely to have a moderate or high coronary risk score, compared to males and holding all other variables constant. Similarly, higher glucose increase the log-odds of moderate and higher risks. HDL cholesterol, unlike total cholesterol, may be a protective factor against cardiovascular risk, as higher levels predicts less log-odds for classes '2' and '3'. Increases in both type of blood pressure are related to greater cardiovascular risk. Finally higher BMI is also associated with higher risk of cardiovascular risk. Most of the coefficients estimates were not surprising as they are typically related to cardiovascular health, however, alcohol consumption not reaching significance did surprise me, as I would expect that increasing alcohol consumption would lead to a worse health status, including cardiovascular health. Perhaps, alcohol consumption effects are made effective via blood pressure, so controlling for blood pressure renders alcohol consumption not significant.
+First the full model coefficients are significantly different from the null model (Log-likelihood = -1524.5; $\chi^2 = 1681.1$; p = < 0.001). Predictive ability of the model is modest with McFadden $R^2$ = 0.355. As for coefficients, all were significant in the model, except for smoking and alcohol consumption. Coeffients are reported with coronary risk score '1' = low risk as reference. Considering age, we see a positive estimate for class '2' = moderate and class '3' = high risk, meaning that being older is more predictive of a higher coronary risk. More precisely, being 1 year older, increases the multinomial log-odds for coronary risk, relative to '1', would decrease by 0.029 and 0.08, for class '2' and '3', respectively. For sex, the comparison is male (Sexo1) against female (Sexo2), with negative coefficients meaning that females are less likely to have a moderate or high coronary risk score, compared to males and holding all other variables constant. Similarly, higher glucose increase the log-odds of moderate and higher risks. HDL cholesterol, unlike total cholesterol, may be a protective factor against cardiovascular risk, as higher levels predicts less log-odds for classes '2' and '3'. Increases in both type of blood pressure are related to greater cardiovascular risk. Finally higher BMI is also associated with higher risk of cardiovascular risk. Most of the coefficients estimates were not surprising as they are typically related to cardiovascular health, however, alcohol consumption not reaching significance did surprise me, as I would expect that increasing alcohol consumption would lead to a worse health status, including cardiovascular health. Perhaps, alcohol consumption effects are made effective via blood pressure, so controlling for blood pressure renders alcohol consumption not significant.
 
 c. Calculate the probability of belonging to each of the categories predicted by the model for a subject with the following characteristics: Age: 46, Sex: female, Basal glucose: 95, Cholesterol: 194, HDL: 47, PAS: 128, PAD: 76, Daily alcohol consumption: No, Gr. Salt: 10, Smoking category: Ex-smoker (<6 months), BMI: 28. Interpret the result.
 
 ```{r, results='asis'}
 newData <- data.frame(
 		      Edad=46,
-		      Sexo=factor(1, levels=c(1,2)),
+		      Sexo=factor(2, levels=c(1,2)),
 		      Glucosa=95,
 		      Colesterol_Total=194,
 		      Colesterol_HDL=47,
 		      m2p11a_PAS=128,
 		      m2p11a_PAD=76,
-		      m7p3=1,
-		      ta3=1,
+		      m7p3=5,
+		      ta3=3,
 		      IMC=28,
 		      # not relevant, only for reshaping
 		      RCV_CHILENO_RECODIFICADO=factor(3, levels=c(1,2,3))
@@ -90,7 +89,7 @@ probs <- data.frame(Risk = c('low', 'moderate', 'high'),
 stargazer(probs, summary=FALSE, title='Category probability')
 ```
 
-Given such values the most likely class is '2', meaning a person with such characteristics would be categorized, by the model, as 'moderate' cardiovascular risk. Which is expected as most positive coefficients were elevated in this simulated person.
+Given such values the most likely class is '1', meaning a person with such characteristics would be categorized, by the model, as 'moderate' cardiovascular risk. Which is expected as most positive coefficients were elevated in this simulated person.
 
 2. Build a model based on discriminant analysis, another on support vector machines and another on trees to predict the cardiovascular risk obtained by the classification described above (low risk = 1, moderate risk = 2 and high risk = 3)
 
@@ -137,13 +136,13 @@ values <- as.data.frame(summary(results)$statistics$Accuracy)$Mean
 title <- paste("LDA: ", round(values[1], 2),
 	       "SVM: ", round(values[2], 2),
 	       "TREE: ", round(values[3], 2), sep=" ")
-ggplot(results) +
+accPlot <- ggplot(results) +
 	labs(y = 'Accuracy',
 	     title = title) +
 	theme_linedraw() +
 	theme(plot.title = element_text(size=5))
 ggsave('accuracy.png',
-       plot = last_plot(),
+       plot = accPlot,
 	width=7,
 	height=7,
 	units=c("cm"))
@@ -184,7 +183,7 @@ All models correct and incorrect classifications are quite similar across all po
 
 c. Obtain also the ROC curve and the area under the curve (AUC) choosing one of the classes as the positive class (you can use the one you want, just explain which one you chose). Compare the results of the three models.
 
-```{r}
+```{r, results='asis'}
 svmP <- ordered(SVMmdl$pred$pred, levels=c('1','2','3'))
 svmMulti <- multiclass.roc(predictor=svmP, response=SVMmdl$pred$obs)
 ldaP <- ordered(LDAmdl$pred$pred, levels=c('1','2','3'))
@@ -197,9 +196,37 @@ treeRs <- treeMulti[['rocs']]
 svmRocs <- list("Class 1 vs 3" = svmRs[[1]], "Class 1 vs 2" = svmRs[[2]], "Class 3 vs 2" = svmRs[[3]])
 svmAUC <- list("Class 1 vs 3" = auc(svmRs[[1]]), "Class 1 vs 2" = auc(svmRs[[2]]), "Class 3 vs 2" = auc(svmRs[[3]]))
 ldaRocs <- list("Class 1 vs 3" = ldaRs[[1]], "Class 1 vs 2" = ldaRs[[2]], "Class 3 vs 2" = ldaRs[[3]])
+ldaAUC <- list("Class 1 vs 3" = auc(ldaRs[[1]]), "Class 1 vs 2" = auc(ldaRs[[2]]), "Class 3 vs 2" = auc(ldaRs[[3]]))
 treeRocs <- list("Class 1 vs 3" = treeRs[[1]], "Class 1 vs 2" = treeRs[[2]], "Class 3 vs 2" = treeRs[[3]])
-ggroc(svmRocs, aes="linetype", legacy.axes=TRUE) + geom_abline() +
-	theme_classic() +
-	labs(linetype="Comparisons")
+treeAUC <- list("Class 1 vs 3" = auc(treeRs[[1]]), "Class 1 vs 2" = auc(treeRs[[2]]), "Class 3 vs 2" = auc(treeRs[[3]]))
 
+roc1 <- ggroc(svmRocs, aes="linetype", legacy.axes=TRUE) + geom_abline() +
+	theme_classic() +
+	labs(linetype="Comparisons", title="Support Vector Machine AUC") 
+roc2 <- ggroc(ldaRocs, aes="linetype", legacy.axes=TRUE) + geom_abline() +
+	theme_classic() +
+	labs(linetype="Comparisons", title="Linear Discriminant Analysis AUC")
+roc3 <- ggroc(treeRocs, aes="linetype", legacy.axes=TRUE) + geom_abline() +
+	theme_classic() +
+	labs(linetype="Comparisons", title="Tree AUC")
+
+grid.arrange(roc1, roc2, roc3)
+
+AUCsvm <- data.frame(svmAUC)
+AUCtree <- data.frame(treeAUC)
+AUClda <- data.frame(ldaAUC)
+stargazer(AUCsvm, summary=FALSE, title='SVM pair-wise AUC')
+stargazer(AUCtree, summary=FALSE, title='Tree pair-wise AUC')
+stargazer(AUClda, summary=FALSE, title='LDA pair-wise AUC')
 ```
+
+d. Export the models and obtain the predicted class by the three models for the subject described in section 1.c
+
+```{r}
+predict(LDAmdl, newData)
+predict(SVMmdl, newData)
+predict(TREEmdl, newData)
+```
+
+LDA model and SVM predict low risk, while the tree model predict moderate risk.
+
