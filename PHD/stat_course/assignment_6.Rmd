@@ -9,12 +9,12 @@ knitr::opts_chunk$set(echo = T, results = "hide",
 warning=FALSE, message=FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 ```
 
-
 ```{r}
 #load libs
 if(!require("pacman")) install.packages("pacman")
 pacman::p_load(ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot, nnet, mlogit, xtable, generics, caret, rlist, pROC, gridExtra)
 ```
+
 
 ```{r}
 # load the dataset
@@ -58,7 +58,7 @@ mdl <- mlogit(RCV_CHILENO_RECODIFICADO ~ 1 | Edad +
 	       m7p3 +
 	       ta3 +
 	       IMC, data = mdlData, reflevel="1")
-stargazer(summary(mdl)$CoefTable, title='Model results')
+stargazer(summary(mdl)$CoefTable, title='Model results', header=FALSE)
 ```
 
 b. Interpret the results obtained. What are the variables that have a significant contribution to the model? Was this result expected?
@@ -86,7 +86,7 @@ newData <- data.frame(
 newDataL <- mlogit.data(newData, choice="RCV_CHILENO_RECODIFICADO", shape="wide")
 probs <- data.frame(Risk = c('low', 'moderate', 'high'),
 	   Probability = c(predict(mdl, newDataL)))
-stargazer(probs, summary=FALSE, title='Category probability')
+stargazer(probs, summary=FALSE, title='Category probability', header=FALSE)
 ```
 
 Given such values the most likely class is '1', meaning a person with such characteristics would be categorized, by the model, as 'moderate' cardiovascular risk. Which is expected as most positive coefficients were elevated in this simulated person.
@@ -175,8 +175,8 @@ badPerc <- 1:3 %>% map(function(x) list(sum(cmList[[x]]['1',c('2','3')]),
 			mutate(Model=names(cmList)) %>%
 			relocate(Model)
 
-stargazer(goodPerc, summary=FALSE, title='Correct classification per Model per Class')
-stargazer(badPerc, summary=FALSE, title='Incorrect classification per Model per Class')
+stargazer(goodPerc, summary=FALSE, title='Correct classification per Model per Class', header=FALSE)
+stargazer(badPerc, summary=FALSE, title='Incorrect classification per Model per Class', header=FALSE)
 ```
 
 All models correct and incorrect classifications are quite similar across all possible classes.
@@ -215,10 +215,12 @@ grid.arrange(roc1, roc2, roc3)
 AUCsvm <- data.frame(svmAUC)
 AUCtree <- data.frame(treeAUC)
 AUClda <- data.frame(ldaAUC)
-stargazer(AUCsvm, summary=FALSE, title='SVM pair-wise AUC')
-stargazer(AUCtree, summary=FALSE, title='Tree pair-wise AUC')
-stargazer(AUClda, summary=FALSE, title='LDA pair-wise AUC')
+stargazer(AUCsvm, summary=FALSE, title='SVM pair-wise AUC', header=FALSE)
+stargazer(AUCtree, summary=FALSE, title='Tree pair-wise AUC', header=FALSE)
+stargazer(AUClda, summary=FALSE, title='LDA pair-wise AUC', header=FALSE)
 ```
+
+\newpage
 
 d. Export the models and obtain the predicted class by the three models for the subject described in section 1.c
 

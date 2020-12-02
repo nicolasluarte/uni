@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2020.10.8)  2 DEC 2020 00:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2020.10.8)  2 DEC 2020 13:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -644,20 +644,20 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 131.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 194.
+(Font)              <10> on input line 190.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 194.
+(Font)              <7> on input line 190.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 194.
+(Font)              <5> on input line 190.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-293.
+289.
 (/usr/share/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-Underfull \vbox (badness 1552) detected at line 297
+Underfull \vbox (badness 1552) detected at line 293
  []
 
 [2pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
@@ -665,71 +665,71 @@ as been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.297 \end{Shaded}
+l.293 \end{Shaded}
                   ]
-<accuracy.png, id=27, 198.9834pt x 198.9834pt>
+<accuracy.png, id=28, 198.9834pt x 198.9834pt>
 File: accuracy.png Graphic file (type png)
 <use accuracy.png>
-Package pdftex.def Info: accuracy.png  used on input line 377.
+Package pdftex.def Info: accuracy.png  used on input line 369.
 (pdftex.def)             Requested size: 198.99504pt x 198.99504pt.
 [3pdfTeX warning (ext4): destination with the same identifier (name{table.2}) h
 as been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.391 \end{enumerate}
-                     ] [4pdfTeX warning (ext4): destination with the same ident
-ifier (name{figure.1}) has been already used, duplicate ignored
+l.385 \begin{Shaded}
+                    ] [4pdfTeX warning (ext4): destination with the same identi
+fier (name{figure.1}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.434 \begin{Shaded}
-                    pdfTeX warning (ext4): destination with the same identifier
- (name{table.3}) has been already used, duplicate ignored
+l.457 \end{enumerate}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{table.3}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.434 \begin{Shaded}
-                     <./accuracy.png>]
-<assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf, id=44, 453.695pt x 316.
+l.457 \end{enumerate}
+                      <./accuracy.png>]
+<assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf, id=45, 453.695pt x 316.
 18124pt>
 File: assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type 
 pdf)
 <use assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf>
 Package pdftex.def Info: assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf 
- used on input line 508.
+ used on input line 494.
 (pdftex.def)             Requested size: 453.6939pt x 316.18047pt.
 [5pdfTeX warning (ext4): destination with the same identifier (name{table.4}) h
 as been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.510 \begin{Shaded}
+l.496 \begin{Shaded}
                     ] [6pdfTeX warning (ext4): destination with the same identi
 fier (name{table.5}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.568 
-      pdfTeX warning (ext4): destination with the same identifier (name{table.6
-}) has been already used, duplicate ignored
+l.556 \newpage
+              pdfTeX warning (ext4): destination with the same identifier (name
+{table.6}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.568 
-       <./assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 602.
+l.556 \newpage
+               <./assignment_6_files/figure-latex/unnamed-chunk-8-1.pdf>]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 578.
 [7pdfTeX warning (ext4): destination with the same identifier (name{table.7}) h
 as been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.602 \end{document}
+l.578 \end{document}
                     ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 602.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 578.
 (./assignment_6.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 602.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 602.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 578.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 578.
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -741,7 +741,7 @@ Here is how much of TeX's memory you used:
  30580 multiletter control sequences out of 15000+600000
  569012 words of font info for 87 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,10n,42p,811b,396s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 41i,10n,42p,811b,398s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/share/texmf-dist/f
 onts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf-dist/fonts/enc/dvips/lm/lm-mathit
 .enc}{/usr/share/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/share/texmf-dist
@@ -751,7 +751,7 @@ xmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf-dist/fonts/type1/pub
 lic/lm/lmr7.pfb></usr/share/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></usr/s
 hare/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf-dist/fonts/t
 ype1/public/lm/lmtti10.pfb>
-Output written on assignment_6.pdf (7 pages, 204015 bytes).
+Output written on assignment_6.pdf (7 pages, 202692 bytes).
 PDF statistics:
  111 PDF objects out of 1000 (max. 8388607)
  88 compressed objects within 1 object stream
