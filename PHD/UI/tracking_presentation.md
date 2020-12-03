@@ -193,16 +193,36 @@ $$ G(\sigma, x) = \frac{1}{2 \pi \sigma^2} \exp \left(-\frac{x^2}{2 \sigma^2} \r
 # We use morphological transformations to fix this
 
 - Morphological transformations are operations applied to binary images, which are based on the image shape
-	- They use a 'kernel', which a windows where a certain operation is performed
-- Our main problem is that there's background objects INSIDE the animal
-	- The closing operation is applied to the kernel
-		- A pixel element is defined as '1' if: inside the kernel there's atleast a '1' pixel (dilation)
-		- Then we 'erode' the boundaries: a pixel is considered '1' is all pixels under the kernel are 1's, otherwise is 0
+	- They also use a 'kernel' and the process is quite similar to the bilateral filter
+	- Here the kernel is binary, its defined by interest and no interest regions (0 and 1, respectively)
+- Our main problem is that there's background objects INSIDE the animal (black pixels inside the white shape)
+	- The closing operation allow us to fix this problem
+		- The closing operation is dilation followed by erosion
+
+# Dilation
+
+1. We pick a kernel
+2. We apply the kernel with stride 1
+3. If any pixel inside the structuring element is '1', then the origin := 1, else := 0
+
+# Dilation
+
+![Upper right corner is '1', so it dilates the image](dilation.png){ width=75% }
 
 # Dilation
 
 ![](/home/nicoluarte/uni/PHD/tracking_device/image.png){ width=25% }
 ![](/home/nicoluarte/uni/PHD/tracking_device/dilation.png){ width=25% }
+
+# Erosion
+
+1. We pick a kernel
+2. We apply the kernel with stride 1
+3. If **all** pixels inside the structuring element are '1', then the origin := 1, else := 0
+
+# Erosion
+
+![The kernel doesnt detect '1' in the left corners, so it erodes the image](erosion.png){ width=75% }
 
 # Erosion
 
@@ -241,22 +261,30 @@ $$ G(\sigma, x) = \frac{1}{2 \pi \sigma^2} \exp \left(-\frac{x^2}{2 \sigma^2} \r
 	- The tail is the furthest away point from the body
 	- The head is the furthest away point from the tail
 
+![](micelines.png){ width=50% }
+
 # The geodesic distance is the proper implementation to solve this
 
-- The geodesic distance is a shortest path between 2 points in a certain space
-	- We define our space as the animal surrounded by boundaries (background)
-	- The distance, considering the boundaries, is the geodesic distance
-	- Is approximated by the fast marching algorithm
-
-# Geodesic vs euclidean distance
-
-![Notice how the boundaries inform the distance at the feet](/home/nicoluarte/uni/PHD/tracking_device/geodesic.png){ width=50% }
+- Approximated by the fast marching algorithm solves the distance problem within a bounded region
+	- How long from a given point, a particle traveling at constant speed, will take to reach the boundaries
+	- The centroid point is the slowest one
+	- We can calculate this speed for every arbitrary 2 points
 
 # Considering this, the furthest away point is the 'body' because the animal is 'chubby'
 
-![Warmer color are more distant](/home/nicoluarte/uni/PHD/tracking_device/points.png){ width=50% }
+- If fast marching algorithm is performed with every pixel as a seed
+
+![Warmer color is more distant](/home/nicoluarte/uni/PHD/tracking_device/points.png){ width=50% }
+
+# Geodesic vs euclidean distance
+
+![(A) Minimal euclidean distance, (B) minimal distance within boundaries](micedistance.png){ width=75% }
 
 # Detecting the head and the tail is relatively simple
+
+- We just need 2 extra calculations
+	- Tail tip := longest distance from the 'hip' or 'body'
+	- Head := longest distance from tail tip
 
 ![In read the calculated points](/home/nicoluarte/uni/PHD/tracking_device/final.png){ width=50% }
 
