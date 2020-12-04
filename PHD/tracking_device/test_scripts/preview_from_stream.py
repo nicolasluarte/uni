@@ -2,6 +2,7 @@
 import sys
 sys.path.append('../')
 from bg_fg import *
+import matplotlib.pyplot as plt
 import os
 import glob
 import csv
@@ -10,15 +11,17 @@ import socket
 
 """ function only made to show an animation """
 def update(i):
-    p.set_data(live_preview(cap, bg))
-    n.set_offsets(live_points(cap, bg))
+    p.set_data(live_preview(cap, bt))
+    n.set_offsets(live_points(cap, bt))
 
 
 """ read from virtual camera """
 bg = cv2.imread('/home/nicoluarte/Downloads/background.jpeg')
-cap = cv2.VideoCapture(2)
-points = live_points(cap, bg)
-p = plt.imshow(live_preview(cap, bg))
+cap = cv2.VideoCapture(0)
+im = image_full_process(bg, cap, 3, 150, 150, 5, 5)
+bt, tail, head, points = body_tracking(im)
+points = live_points(cap, bt)
+p = plt.imshow(live_preview(cap, bt))
 n = plt.scatter(*zip(*points), marker="x", color="red")
 ani = FuncAnimation(plt.gcf(), update, interval=50)
 plt.show()

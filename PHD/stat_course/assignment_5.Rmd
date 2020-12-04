@@ -1,6 +1,7 @@
 ---
 title: Assignment 5
 author: Luis Nicolas Luarte Rodriguez
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -12,13 +13,14 @@ warning=FALSE, message=FALSE, tidy.opts=list(width.cutoff=70), tidy=TRUE)
 ```{r}
 #load libs
 if(!require("pacman")) install.packages("pacman")
-pacman::p_load(survival, knitr, ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt)
+pacman::p_load(survival, knitr, ggplot2, knitr, kableExtra, tidyverse, My.stepwise, reshape2, GGally, ggpubr, gtsummary, formatR, gt, olsrr, stargazer, boot)
 ```
 
 ```{r}
 # load the dataset
 setwd('/home/nicoluarte/uni/PHD/stat_course')
-dataSet <- as_tibble(read.csv('ENS.csv', sep=","))
+dataSet <- as_tibble(read.csv('ENS.csv', sep=",", header=TRUE))
+t <- as.data.frame(read.csv('ENS.csv', sep=",", header=TRUE))
 head(dataSet)
 ```
 
@@ -104,18 +106,17 @@ mdl <- lm(data=dataModel, m2p11a_PAS ~ .)
 summary(mdl)
 ```
 
-```{r out.width = '40%'}
+```{r results='asis'}
 fit_stats <-
   broom::glance(mdl) %>%
   select(`R<sup>2</sup>` = r.squared, AIC) %>%
   mutate_all(function(x) style_sigfig(x, digits = 3)) %>%
   {paste(names(.), ., sep = " = ", collapse = "; ")}
 # generate table with results
-tbl_regression(mdl) %>%
-	as_gt() %>%
-	gt::tab_source_note(gt::html(fit_stats)) %>%
-	gt::gtsave(filename="model_table.png")
+stargazer(mdl, header=FALSE, type="latex", title="Regression Results")
 ```
+
+
 All rows containing 1 or more missing values were eliminated to fit the model.
 
 ## b. Interpret the results obtained: what are the variables that have significant contribution to the model? Was this result expected?
@@ -124,3 +125,56 @@ In general the model does not fit data very well, r squared measure of fit is be
 
 ## c. How does a linear regression model predict the systolic blood pressure? Comment the results.
 As previously stated the model does not provide a good fit. Sex was one of the most significant covariates, which make sense because between the variables included it refers directly to genetic differences. BMI is somewhat controlled between males and females because it considers height, which is, typically, a variable that is quite different between males and females. The other variables are likely to be related to life-style choices, which should not be so different between males and females. Finally, the low r squared might be related to systolic blood pressure not being a very accurate measure, because of daily fluctuations.
+
+# 3. In the previous section we have seen that there are some variables that do not have a significant contribution to the model:
+
+## a. Select the best model using "backward selection"
+
+```{r}
+# backwards assuming the previous model is the full model
+finalModel <- ols_step_backward_aic(mdl, details=TRUE)
+plot(finalModel)
+summary(finalModel$model)
+```
+
+\newpage
+
+## b. Compute the confidence intervals for the parameters of the best model using the Wald method seen in class (coefCI(mdl) in Matlab)
+
+```{r, results='asis'}
+# confidence interval for the parameter using Walds
+model_ci <- confint(finalModel$model, level=0.95, method=c("Wald"))
+stargazer(model_ci, header=FALSE, type='latex', title="Wald CI")
+```
+
+\newpage
+
+## c. Compute again the confidence intervals using bootstrap and compare the results
+
+```{r results='asis'}
+bootFunc <- function(data, idx) {
+	coef(lm(m2p11a_PAS~Edad +
+		Sexo +
+		IMC +
+		Glucosa +
+		Colesterol_HDL +
+		Colesterol_Total,
+	data=dataModel[idx,]))
+}
+bootRes <- boot(data=dataModel,
+		statistic=bootFunc,
+		R=1000)
+bootCI <- 1:length(coef(finalModel$model)) %>%
+	map(function(x) as.vector(boot.ci(bootRes, type="perc", index=x)$perc)[-3:-1]) %>%
+	unlist() %>%
+	matrix(., nrow=length(.)/2, byrow=T) %>%
+	as.data.frame(.) %>%
+	mutate(Coefficients=names(coef(finalModel$model))) %>%
+	select(Coefficients, everything()) %>%
+	rename(., "2.5%"=V1, "97.5%"=V2)
+knitr::kable(bootCI, caption = "Bootstrap CI") %>%
+	kable_styling(latex_options = "hold_position")
+```
+
+Coefficients confidence intervals are almost the same in all cases. Coefficients values were obtained from 1000 bootstrap replicated and converged into similar values. The method used for obtaining the confidence intervals was the percentile bootstrap.
+
