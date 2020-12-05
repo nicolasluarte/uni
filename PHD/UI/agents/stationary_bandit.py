@@ -55,3 +55,10 @@ for i in range(1000):
     else:
         b.reward()
         banana.estimate_value(b.reward_history[-1], action)
+
+
+x_val = [x[0] for x in banana.estimate if x[1] == 1]
+x = list(range(0, len(x_val)))
+plt.plot(x, x_val)
+plt.show()
+
