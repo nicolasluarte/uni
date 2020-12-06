@@ -50,3 +50,63 @@
 - retina
 	- contains the photoreceptors cells
 
+# Hearing and the vestibular system
+
+## auditory system
+
+- detects sound waves compression and expansion of air molecules in the form of pressure waves
+- amplitude of the wave determines volume
+- frequency determines de pitch
+
+- anatomy of the ear
+- malleus, incus, stape <- transduce to liquid in the cochlea
+	- amplification of air vibrations
+- cause vibrations on the oval windows of the cochlea
+- fluid paths
+	- oval windows
+		- scala vestibuli
+		- scala timpani
+	- round window
+	- organ of corti
+		- scala vestibuli: fluid right behind oval window
+		- scala tympani, above basilar membrane
+			- hair cells <- tectorial membrane
+			- bending of hair cause hyper or depolarization
+
+## vestibular system
+
+- angular accelarion
+- linear acceleration
+- semicircular canals: changes in head rotation
+- otolith organs
+	- involve hair cells
+	- linear or position of the head
+- semicircular canal <- 3 channels at 90° angles
+	- cupula <- hair cells that have extensions
+- utricle
+	- detect movement on the horizontal
+- saccule
+	- detect vertical movement
+
+
+## chemical senses
+
+- taste
+	- taste pore
+	- taste receptor cell
+	- afferent nerve
+	- modalities <- increase in intracellular Ca++ 
+		- sweet <- gprotein
+		- sour <- ion channels (H+)
+		- salt <- ion channels (Na+)
+		- bitter <- gprotein
+		- umami <- gprotein
+- smell
+	- primary afferent neurons themselves, express olfactory receptors
+	- neurons send out cillia
+	- have receptor that bind odorant
+	- gprotein coupled receptor
+	- 400~ olfactory receptor types
+	- can discriminate 10.000 odors
+	- creates graded potentials -> leads to action potentials
+	- combinatorial perception
