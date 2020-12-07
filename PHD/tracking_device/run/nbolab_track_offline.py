@@ -20,12 +20,20 @@ if __name__ == '__main__':
 parserArg = argparse.ArgumentParser(description='write frame track to csv')
 parserArg.add_argument('--frames_path', type=str, help='where are the frames')
 parserArg.add_argument('--background', type=str, help='specify the path of back')
+parserArg.add_argument('--filename', type=str, help='specify filename')
 args = parserArg.parse_args()
 
 
-# csv label, so every record is distinct
+# frames path
 if args.frames_path is not None:
-    label = str(args.frames_path)
+    path = str(args.frames_path)
+else:
+    path = str(socket.gethostname()) + "_" + \
+        datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+
+# file name
+if args.frames_path is not None:
+    label = str(args.filename)
 else:
     label = str(socket.gethostname()) + "_" + \
         datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -39,13 +47,13 @@ else:
     print("load default path for background")
 
 # load frames
-frames_list = sorted(glob.glob(label + '/*.png'))
+frames_list = sorted(glob.glob(path + '/*.png'))
 print(len(frames_list))
 
  # start writing into csv
-with open('../csv_bak/' + 'test' + '.csv', 'w') as f:
+with open('../csv_bak/' + label + '.csv', 'w') as f:
     writer = csv.writer(f)
-    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "body_x", "body_y", "tail_x", "tail_y", "head_x", "head_y"])
+    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "body_x", "body_y", "tail_x", "tail_y", "head_x", "head_y", "FRAME_PATH"])
     for i in frames_list:
         # read a single frame
         frame = cv2.imread(i)
@@ -60,5 +68,5 @@ with open('../csv_bak/' + 'test' + '.csv', 'w') as f:
             ky=parser.getint('postprocess', 'kernely')
             ))
         time_stamp = datetime.datetime.now().strftime("%Y %m %d %H %M %S %f")
-        log = list(map(int, time_stamp.split())) + [item for i in points for item in i]
+        log = list(map(int, time_stamp.split())) + [item for i in points for item in i] + [os.path.basename(i)]
         writer.writerow(log)
