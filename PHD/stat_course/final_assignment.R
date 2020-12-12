@@ -1,9 +1,11 @@
-library(caret)
+library(lme4)
+library(mclust)
+library(lubridate)
 library(tidymodels)
-library(factoextra)
 library(NbClust)
 library(ggplot2)
 library(tidyverse)
+library(caret)
 setwd('/home/nicoluarte/uni/PHD/stat_course')
 rats <- list.files(pattern = "rat[0-9].csv") %>% 
 	map_df(~read_csv(.))
@@ -11,91 +13,145 @@ labs <- list.files(pattern = "ratlabs[0-9].csv") %>%
 	map_df(~read.csv(.))
 dat <- bind_cols(rats, labs)
 dat$rat <- as.factor(dat$rat)
-dat <- dat %>% drop_na()
 
 # merge factor levels
 dat$Behavior <- as.factor(dat$Behavior)
 levels(dat$Behavior) <- c("0", "1", "1", "1", "0", "0", "0")
 
-# optimal clusters
-opt.k <- dat %>% group_by(rat) %>%
-	select(body_x, body_y) %>%
-	group_map(~ which.max(fviz_nbclust(.x, kmeans, method="silhouette")$data$y)) %>% unlist()
-group.n <- dat %>% group_by(rat) %>% summarise(n = n()) %>% select(n)
-aux <- map2(unlist(opt.k), unlist(group.n), ~ rep(.x, .y)) %>% unlist()
-dat <- dat %>% mutate(opt.k = aux)
-
 # add features
 dat <- dat %>%
 	group_by(rat) %>%
-	mutate(lag1_x = lag(body_x, k=1)) %>%
-	mutate(lag1_y = lag(body_y, k=1))
+	mutate(lag1_x = scale(lag(body_x, k=1))) %>%
+	mutate(lag1_y = scale(lag(body_y, k=1))) %>%
+	mutate(distance = scale(sqrt((lag1_x + lag1_y)))) %>%
+	mutate(speed = scale(sqrt((lag1_x + lag1_y))/ 0.5)) %>%
+	mutate(rollspeed = scale(zoo::rollmean(sqrt((lag1_x + lag1_y))/ 0.5, 30, fill=NA))) %>%
+	ungroup() %>%
+	drop_na()
+# scale all the variables
+dat <- dat %>% mutate_if(is.numeric, scale)
 
-# k-means considering rat (groups) and optimal center size
+# path plot
+plot.data <- dat
+plot.data %>% 
+	ggplot(aes(x=body_x, y=body_y, )) +
+	geom_path(aes(color = Frames)) + facet_wrap(~rat) + 
+	theme_bw() +
+	labs(x = "Body 'x' position", y = "Body 'y' position")
+ggsave("path.png")
+
+# distance plot
+plot.data %>% 
+	ggplot(aes(x=Frames, y=distance)) +
+	geom_smooth() + facet_wrap(~rat) + 
+	theme_bw() +
+	labs(x = "Frames", y = "Distance traveled in pixels arbitrary units")
+ggsave("distance.png")
+
+# speed plot
+plot.data %>% 
+	ggplot(aes(x=Frames, y=rollspeed)) +
+	geom_line() + facet_wrap(~rat) + 
+	theme_bw() +
+	labs(x = "Frames", y = "Rolling average of speed over 1 second")
+ggsave("speed.png")
+
+# distance hist plot
+plot.data %>% 
+	ggplot(aes(x=distance, fill=rat)) +
+	geom_density(alpha=0.5) +
+	theme_bw() +
+	labs(x = "Distances", y = "Density")
+ggsave("density.png")
+
+# distance hist plot
+plot.data %>% 
+	ggplot(aes(x=Behavior, fill=rat)) +
+	geom_bar() +
+	theme_bw() +
+	labs(x = "Behavior label", y = "Count")
+ggsave("behavior.png")
+
+# k-means cluster distribution
+kdist <- data.frame(clusters = unlist(k.clust), rat = dat %>% unnest(data) %>% select(rat))
+kdist %>% 
+	ggplot(aes(x=clusters)) +
+	geom_histogram() +
+	theme_bw() +
+	facet_wrap(~rat) +
+	labs(x = "Cluster index", y = "Count over all rats")
+ggsave("kdist.png")
+
+# gmm cluster distribution
+gmmdist <- data.frame(clusters = unlist(gmm.clust), rat = dat %>% unnest(data) %>% select(rat))
+gmmdist %>% 
+	ggplot(aes(x=clusters)) +
+	geom_histogram() +
+	theme_bw() +
+	facet_wrap(~rat) +
+	labs(x = "Cluster index", y = "Count over all rats")
+ggsave("gmmdist.png")
+
+# k-means considering rat (groups) and optimal center size, same for gmm
 dat <- dat %>%
 	group_by(rat) %>%
 	nest() %>%
-	mutate(k.mdl = map(data, ~kmeans(.x %>% select(body_x, body_y), which.max(fviz_nbclust(.x %>% select(body_x, body_y), kmeans, method="silhouette")$data$y)))) %>%
+	mutate(k.mdl = map(data, ~kmeans(.x %>%
+					 select(body_x, body_y, head_x, head_y, tail_x, tail_y, distance, rollspeed) %>%
+					 drop_na(),
+				 which.max(fviz_nbclust(.x %>% select(body_x, body_y, head_x, head_y, tail_x, tail_y, distance, rollspeed), kmeans, method="silhouette")$data$y)))) %>%
+	mutate(gmm = map(data, ~ mclust::Mclust(.x %>% select(body_x, body_y, head_x, head_y, tail_x, tail_y, distance, rollspeed) %>% drop_na()))) %>%
 	ungroup()
-k.clust <- 1:dim(dat)[1] %>% map(., function(x) dat$k.mdl[[x]]$cluster) %>% unlist()
+# bind centers and GMM classifications
+gmm.clust <- 1:dim(dat)[1] %>% map(., function(x) dat$gmm[[x]]$classification)
+k.clust <- 1:dim(dat)[1] %>% map(., function(x) dat$k.mdl[[x]]$cluster)
 dat <- dat %>%
-	unnest(c(data)) %>%
-	mutate(.cluster = k.clust)
+	mutate(data = map2(data, k.clust, ~bind_cols(.x, .cluster = .y))) %>%
+	mutate(data = map2(data, gmm.clust, ~bind_cols(.x, .gmmcluster = .y)))
 
-# fit knn to each rat and report cross validated accuracy
+# correlation
+1:4 %>% map(~chisq.test(dat$data[[.x]]$.cluster, dat$data[[.x]]$Behavior))
+1:4 %>% map(~chisq.test(dat$data[[.x]]$.gmmcluster, dat$data[[.x]]$Behavior))
+1:4 %>% map(~rcompanion::cramerV(dat$data[[.x]]$.cluster, dat$data[[.x]]$Behavior, bias.correct=TRUE))
+1:4 %>% map(~rcompanion::cramerV(dat$data[[.x]]$.gmmcluster, dat$data[[.x]]$Behavior, bias.correct=TRUE))
+
+# knn models
 ctrl <- trainControl(method="repeatedcv",
-		     repeats=5,
-		     savePredictions="final",
+		     repeats = 3)
+knn.mdl <- function(df) {
+	train(Behavior ~ rollspeed * .gmmcluster,
+				 data = df,
+				 method = "knn",
+				 trControl = ctrl,
+				 preProcess = c("center","scale"),
+				 tuneLength = 20)
+}
+dat <- dat %>% mutate(knn = map(data, knn.mdl))
+
+ctrl2 <- trainControl(method="repeatedcv",
+		     repeats = 3,
 			sampling="down")
-dat <- dat %>%
-	group_by(rat) %>%
-	nest() %>%
-	mutate(cv.knn = map(data, function(df) train(Behavior ~ as.factor(.cluster) + lag1_x + lag1_y,
-							 data = df,
-							 method = "knn",
-							 na.action = na.omit,
-							 trControl = ctrl,
-							 tuneLength = 10))) %>%
-	mutate(cv.glm = map(data, function(df) train(Behavior ~ as.factor(.cluster) + lag1_x + lag1_y,
-							 data = df,
-							 na.action = na.omit,
-							 method = "glm",
-							 family="binomial",
-							 trControl = ctrl))) %>%
-	mutate(cv.knn.acc = map_dbl(cv.knn, function(x) max(x$results["Accuracy"]))) %>%
-	mutate(cv.glm.acc = map_dbl(cv.glm, function(x) max(x$results["Accuracy"])))
-summary(dat$cv.glm[[1]])
-dat$cv.knn
-dat
+knn.mdl2 <- function(df) {
+	train(Behavior ~ rollspeed * .gmmcluster,
+				 data = df,
+				 method = "knn",
+				 trControl = ctrl2,
+				 preProcess = c("center","scale"),
+				 tuneLength = 20)
+}
+dat <- dat %>% mutate(knn.2 = map(data, knn.mdl2))
+
+global.knn <- knn.mdl2(dat %>% unnest(data))
 
 # plot by movement by cluster
 mov.cluster <- dat %>% unnest(data)
 mov.cluster %>% 
-	ggplot(aes(x=body_x, y=body_y, color=as.factor(.cluster))) +
-	geom_path() + facet_wrap(~rat)
-mov.cluster %>% ggplot(aes(.cluster, ..count..)) + geom_bar(aes(fill=Behavior), position="dodge")
+	ggplot(aes(x=scale(body_x), y=scale(body_y), color=as.factor(.cluster))) +
+	geom_path() + facet_wrap(~rat) + theme_bw() + labs(x = "X position", y = "Y position")
+ggsave("kmeans.png")
 
-# global model
-global.dat <- dat %>% unnest(data)
-k.folds = 3
-folds <- groupKFold(global.dat$rat, k = k.folds) 
-global.control <- trainControl(
-                        method="repeatedcv", 
-                        number=k.folds, 
-                        repeats=3,
-			preProcOptions=c("center", "scale"),
-			sampling="down",
-                        index=folds)
-global.mdl1 <- train(Behavior ~ as.factor(.cluster) + lag1_x + lag1_y,
-							 data = global.dat,
-							 method = "knn",
-							 na.action = na.omit,
-							 trControl = global.control,
-							 tuneLength = 10)
-global.mdl2 <- train(Behavior ~ as.factor(.cluster) + lag1_x + lag1_y,
-							 data = global.dat,
-							 method = "rf",
-							 metric = "Accuracy",
-							 na.action = na.omit,
-							 trControl = global.control,
-							 tuneLength = 4)
+mov.cluster %>% 
+	ggplot(aes(x=scale(body_x), y=scale(body_y), color=as.factor(.gmmcluster))) +
+	geom_path() + facet_wrap(~rat) + theme_bw() + labs(x = "X position", y = "Y position")
+ggsave("gmm.png")
+
