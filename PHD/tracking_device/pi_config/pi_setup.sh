@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# get passwordless access in each one
+# assign proper hostnames
+# remember to put all ips and hostnames in the ipfile
+
+IP=($(awk -F ',' '{print $1}' ipfile))
+HOSTNAME=($(awk -F ',' '{print $2}' ipfile))
+
+if [[ "$1" == "full" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing full setup including hostnames and passwordless login"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh-copy-id ${IP[$i]}
+		ssh ${IP[$i]} "sudo hostnamectl set-hostname ${HOSTNAME[$i]}"
+	done
+fi
+
+# broadcast reboot
+if [[ "$1" == "reboot" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing reboot"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "sudo reboot"
+	done
+fi
+
+# broadcast update
+if [[ "$1" == "update" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing update"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "sudo apt-get update"
+	done
+fi
+
+# broadcast python install
+# also install requierements
+if [[ "$1" == "python" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing python installation"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "sudo apt install python3"
+		ssh ${IP[$i]} "sudo apt-get install git"
+		ssh ${IP[$i]} "sudo rm -rf uni &&
+			git clone https://github.com/nicolasluarte/uni.git && 
+			cd ~/uni/PHD/tracking_device &&
+			pip3 install --user -r requirements.txt" 
+	done
+fi
+
+# broadcast cam setup
+if [[ "$1" == "cam" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing cam installation"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "sudo apt-get install cmake libjpeg8-dev &&
+			sudo apt-get install gcc g++ &&
+			git clone https://github.com/jacksonliam/mjpg-streamer ||
+			cd mjpg-streamer/mjpg-streamer-experimental &&
+			make &&
+			sudo make install"
+	done
+fi
+
+# broadcast cam preview
+if [[ "$1" == "campreview" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing cam preview"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "LD_LIBRARY_PATH=./ && mjpg_streamer -o 'output_http.so -w ./www' -i 'input_raspicam.so'"
+	done
+
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "pkill mjpg_streamer"
+	done
+
+fi
