@@ -7,6 +7,10 @@
 IP=($(awk -F ',' '{print $1}' ipfile))
 HOSTNAME=($(awk -F ',' '{print $2}' ipfile))
 
+# variables for running previews
+PREVIEW='~/uni/PHD/tracking_device/run/nbolab_track_preview.py'
+STREAM='~/uni/PHD/tracking_device/stream'
+
 if [[ "$1" == "full" ]] || [[ "$1" == "all" ]]
 then
 	echo "Performing full setup including hostnames and passwordless login"
@@ -74,12 +78,20 @@ then
 	echo "Performing cam preview"
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
-		ssh ${IP[$i]} "mjpg_streamer -i 'input_file.so -f ~/pi_stream -n stream.jpg' -o 'output_http.so -w /usr/local/www'"
+
+		ssh ${IP[$i]} "nohup python3 $PREVIEW &"
+		ssh ${IP[$i]} "nohup mjpg_streamer -i 'input_file.so -f $STREAM -n stream.jpg' -o 'output_http.so -w /usr/local/www' &"
 	done
 
+fi
+
+# update repo
+if [[ "$1" == "python" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing repo update"
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
-		ssh ${IP[$i]} "pkill mjpg_streamer"
+		ssh ${IP[$i]} "sudo rm -rf uni &&
+			git clone https://github.com/nicolasluarte/uni.git"
 	done
-
 fi

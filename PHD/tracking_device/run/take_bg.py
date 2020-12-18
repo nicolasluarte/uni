@@ -12,7 +12,7 @@ from os.path import expanduser
 
 
 if __name__ == '__main__':
-    print("HELLO")
+    print("reading arguments from configuration file")
     # read the arguments
     parserArg = argparse.ArgumentParser(description='take background picture')
     parserArg.add_argument('-d', '--file_dest', type=str, help='destination of background')
@@ -26,11 +26,13 @@ if __name__ == '__main__':
     if args.file_dest is not None:
         path = str(args.file_name) + '/bg_' + hostname + '.png'
     else:
+        print("background picture save to background folder")
         path = str(home) + repo + '/background/bg_' + hostname + '.png'
     # set cam
     if args.capture is not None:
         cap = int(args.capture)
     else:
+        print("set to the default camera")
         cap = 0
 
     take_background(path, cap)

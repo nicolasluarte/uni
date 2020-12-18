@@ -1,7 +1,6 @@
 #!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 import cv2
 import numpy as np
-from sklearn.cluster import KMeans
 import skfmm
 import paramiko
 import time, datetime
