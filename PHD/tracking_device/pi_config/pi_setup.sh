@@ -74,7 +74,7 @@ then
 	echo "Performing cam preview"
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
-		ssh ${IP[$i]} "LD_LIBRARY_PATH=./ && mjpg_streamer -o 'output_http.so -w ./www' -i 'input_raspicam.so'"
+		ssh ${IP[$i]} "mjpg_streamer -i 'input_file.so -f ~/pi_stream -n stream.jpg' -o 'output_http.so -w /usr/local/www'"
 	done
 
 	for ((i=0; i<${#IP[@]}; i++))
