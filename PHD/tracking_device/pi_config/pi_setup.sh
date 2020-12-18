@@ -86,7 +86,7 @@ then
 fi
 
 # update repo
-if [[ "$1" == "python" ]] || [[ "$1" == "all" ]]
+if [[ "$1" == "repo" ]] || [[ "$1" == "all" ]]
 then
 	echo "Performing repo update"
 	for ((i=0; i<${#IP[@]}; i++))
