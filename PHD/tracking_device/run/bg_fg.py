@@ -9,7 +9,7 @@ from matplotlib.animation import FuncAnimation
 
 
 def preprocess_image(image, d, sigma1, sigma2):
-    gray_image = cv2.cvtColor(bl_filter_image, cv2.COLOR_BGR2GRAY)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     bl_filter_image = cv2.bilateralFilter(gray_image, d, sigma1, sigma2) # test out parameters
     return bl_filter_image
 
