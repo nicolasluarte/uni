@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # get passwordless access in each one
 # assign proper hostnames
