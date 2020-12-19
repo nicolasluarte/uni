@@ -8,8 +8,8 @@ IP=($(awk -F ',' '{print $1}' ipfile))
 HOSTNAME=($(awk -F ',' '{print $2}' ipfile))
 
 # variables for running previews
-PREVIEW='~/uni/PHD/tracking_device/run/nbolab_track_preview.py'
-STREAM='~/uni/PHD/tracking_device/stream'
+PREVIEW='uni/PHD/tracking_device/run/nbolab_track_preview.py'
+STREAM='uni/PHD/tracking_device/stream'
 
 if [[ "$1" == "full" ]] || [[ "$1" == "all" ]]
 then
@@ -79,7 +79,7 @@ then
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
 
-		ssh ${IP[$i]} "python3 $PREVIEW --background ~/uni/PHD/tracking_device/background/bg_node0.png --capture 0 & export LD_LIBRARY_PATH=. && mjpg_streamer -i 'input_file.so -f $STREAM -n stream.jpg' -o 'output_http.so -w /usr/local/www'"
+		ssh ${IP[$i]} "python3 $PREVIEW --background uni/PHD/tracking_device/background/bg_node0.png --capture 0 & export LD_LIBRARY_PATH=. && mjpg_streamer -i 'input_file.so -f $STREAM -n stream.jpg' -o 'output_http.so -w /usr/local/www'"
 	done
 
 fi
