@@ -1,4 +1,4 @@
-#!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
+#!/home/pi/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 import sys
 from bg_fg import *
 import os
@@ -10,8 +10,10 @@ from configparser import ConfigParser
 from time import time as timer
 from os.path import expanduser
 
-
 if __name__ == '__main__':
+    # read the config file
+    parser = ConfigParser()
+    parser.read('/home/pi/uni/PHD/tracking_device/config/config.conf')
     print("reading arguments from configuration file")
     # read the arguments
     parserArg = argparse.ArgumentParser(description='take background picture')
@@ -35,4 +37,8 @@ if __name__ == '__main__':
         print("set to the default camera")
         cap = 0
 
-    take_background(path, cap)
+    take_background(path, cap,
+            d=parser.getint('preprocess', 'filter_size'),
+            sigma1=parser.getint('preprocess', 'sigma_color'),
+            sigma2=parser.getint('preprocess', 'sigma_space')
+                )

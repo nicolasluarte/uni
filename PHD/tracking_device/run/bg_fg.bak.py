@@ -6,9 +6,11 @@ import paramiko
 import time, datetime
 from matplotlib.animation import FuncAnimation
 
+
+
 def preprocess_image(image, d, sigma1, sigma2):
-    #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    bl_filter_image = cv2.bilateralFilter(image, d, sigma1, sigma2)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    bl_filter_image = cv2.bilateralFilter(gray_image, d, sigma1, sigma2) # test out parameters
     return bl_filter_image
 
 """ the image gets dilated (if one pixel under the kernel is '1' the a determined pixel is also '1') and then followed by erosion (a pixel is 1 if all pixels under the kernel are 1) """
@@ -33,8 +35,7 @@ def contour_extraction(image):
 
 """ outputs the difference between the background and background + animal, so animal can be isolated """
 def bgfg_diff(background, foreground, d, sigma1, sigma2):
-    #bg = preprocess_image(background, d, sigma1, sigma2)
-    bg = background
+    bg = preprocess_image(background, d, sigma1, sigma2)
     fg = preprocess_image(foreground, d, sigma1, sigma2)
     diff = cv2.absdiff(bg, fg)
     return diff
@@ -105,15 +106,14 @@ def end_remote_stream(ip, port, username, password):
     remote_pi_command(ip, port=port, username=username, password=password, command=cmd)
 
 """ takes a picture """
-def take_background(path, capture, d, sigma1, sigma2):
+def take_background(path, capture):
     cam = cv2.VideoCapture(capture)   # should be the infrared cam
     cam.set(3, 320)
     cam.set(4, 240)
     ret, frame = cam.read()
     gray_background = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray_filtered_image = cv2.bilateralFilter(gray_background, d, sigma1, sigma2)
     if ret:    # frame captured without any errors
-        cv2.imwrite(path, gray_filtered_image) #save image
+        cv2.imwrite(path, gray_background) #save image
         cam.release()
 
 """ live preview with geodesic distance takes the body as reference """

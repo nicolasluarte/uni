@@ -28,11 +28,11 @@ args = parserArg.parse_args()
 
 # set the background
 if args.background is not None:
-    bg = cv2.imread(args.background)
+    bg = cv2.imread(args.background, cv2.IMREAD_GRAYSCALE)
     print("loaded background from " + args.background)
     print("background image size: " + str(bg.shape))
 else:
-    bg = cv2.imread('/home/pi/uni/PHD/tracking_device/background/bg.png')
+    bg = cv2.imread('/home/pi/uni/PHD/tracking_device/background/bg.png', cv2.IMREAD_GRAYSCALE)
     print("load default path for background")
     print("background image size: " + str(bg.shape))
 
@@ -99,7 +99,7 @@ while(True):
     # process the image
     _, _, _, points = body_tracking(image_full_process(
         background=bg,
-        foreground=frame,
+        foreground=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
         d=parser.getint('preprocess', 'filter_size'),
         sigma1=parser.getint('preprocess', 'sigma_color'),
         sigma2=parser.getint('preprocess', 'sigma_space'),
