@@ -13,7 +13,7 @@ from time import time as timer
 if __name__ == '__main__':
     # read the config file
     parser = ConfigParser()
-    parser.read('../config/config.conf')
+    parser.read('/home/pi/uni/PHD/tracking_device/config/config.conf')
 
 # read the arguments
 parserArg = argparse.ArgumentParser(description='write frame track to csv')
