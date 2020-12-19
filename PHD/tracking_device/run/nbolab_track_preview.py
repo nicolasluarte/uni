@@ -30,7 +30,7 @@ if args.background is not None:
     print("loaded background from " + args.background)
     print("background image size: " + str(bg.shape))
 else:
-    bg = cv2.imread('../background/bg.png')
+    bg = cv2.imread('/home/pi/uni/PHD/tracking_device/background/bg.png')
     print("load default path for background")
     print("background image size: " + str(bg.shape))
 
@@ -75,7 +75,7 @@ while(True):
     img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
     img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
     img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
-    cv2.imwrite('../stream/stream.jpg', img_jpg) 
+    cv2.imwrite('/home/pi/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
     # end timer for fps control
     diff = timer() - start
     while diff < fps:
