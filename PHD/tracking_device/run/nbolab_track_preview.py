@@ -74,5 +74,6 @@ while(True):
     img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
     img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
     cv2.imwrite('/home/pi/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
+    print("frame done")
 cap.release()
 cv2.destroyAllWindows()
