@@ -1,4 +1,6 @@
 #!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
+from threading import Thread
+import cv2, time
 import sys
 sys.path.append('../')
 from bg_fg import *
@@ -13,7 +15,7 @@ from time import time as timer
 if __name__ == '__main__':
     # read the config file
     parser = ConfigParser()
-    parser.read('/home/pi/uni/PHD/tracking_device/config/config.conf')
+    parser.read('/home/nicoluarte/uni/PHD/tracking_device/config/config.conf')
 
 # read the arguments
 parserArg = argparse.ArgumentParser(description='write frame track to csv')
@@ -30,37 +32,70 @@ if args.background is not None:
     print("loaded background from " + args.background)
     print("background image size: " + str(bg.shape))
 else:
-    bg = cv2.imread('/home/pi/uni/PHD/tracking_device/background/bg.png')
+    bg = cv2.imread('/home/nicoluarte/uni/PHD/tracking_device/background/bg.png')
     print("load default path for background")
     print("background image size: " + str(bg.shape))
 
-# set the capture device
-if args.capture is not None:
-    cap = cv2.VideoCapture(args.capture)
-    _, aux_frame = cap.read()
-    print("user defined cam selected: " + str(args.capture))
-    print("cam image size: " + str(aux_frame.shape))
-else:
-    cap = cv2.VideoCapture(0)
-    _, aux_frame = cap.read()
-    print("default camera selected")
-    print("cam image size: " + str(aux_frame.shape))
+## set the capture device
+#if args.capture is not None:
+#    cap = cv2.VideoCapture(args.capture)
+#    _, aux_frame = cap.read()
+#    print("user defined cam selected: " + str(args.capture))
+#    print("cam image size: " + str(aux_frame.shape))
+#else:
+#    cap = cv2.VideoCapture(0)
+#    _, aux_frame = cap.read()
+#    print("default camera selected")
+#    print("cam image size: " + str(aux_frame.shape))
+#
+## set fps control
+#if args.fps is not None:
+#    fps = args.fps
+#    fps /= 1000
+#    print("user defined FPS: " + str(args.fps))
+#else:
+#    fps = cap.get(cv2.CAP_PROP_FPS)
+#    fps /= 1000
+#    print("selected camara default FPS:" + str(fps*1000))
 
-# set fps control
-if args.fps is not None:
-    fps = args.fps
-    fps /= 1000
-    print("user defined FPS: " + str(args.fps))
-else:
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    fps /= 1000
-    print("selected camara default FPS:" + str(fps*1000))
+## MULTI ##
+
+class VideoGet:
+    """
+    Class that continuously gets frames from a VideoCapture object
+    with a dedicated thread.
+    """
+
+    def __init__(self, src=0):
+        self.stream = cv2.VideoCapture(src)
+        self.stream.set(3, 320)
+        self.stream.set(4, 240)
+        (self.grabbed, self.frame) = self.stream.read()
+        self.stopped = False
+
+    def start(self):    
+        Thread(target=self.get, args=()).start()
+        return self
+
+    def get(self):
+        while not self.stopped:
+            if not self.grabbed:
+                self.stop()
+            else:
+                (self.grabbed, self.frame) = self.stream.read()
+
+    def stop(self):
+        self.stopped = True
+
+
+video_getter = VideoGet(1).start()
 
 while(True):
     # start timer for fps control
     start = timer()
     # read a single frame
-    ret, frame = cap.read()
+    #ret, frame = cap.read()
+    frame = video_getter.frame
     # process the image
     _, _, _, points = body_tracking(image_full_process(
         background=bg,
@@ -73,12 +108,16 @@ while(True):
         ))
     # plot stuff
     diff = timer() - start
-    #img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
-    #img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
-    #img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
-    ##cv2.putText(img_jpg, str(diff), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255), 3)
-    #cv2.imwrite('/home/pi/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
+    img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
+    img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
+    img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
+    cv2.putText(img_jpg, str(diff), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255), 3)
+    cv2.imshow('frame', img_jpg)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+    #cv2.imwrite('/home/nicoluarte/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
     print(diff)
     # end timer for fps control
+video_getter.stop()
 cap.release()
 cv2.destroyAllWindows()

@@ -108,6 +108,8 @@ def end_remote_stream(ip, port, username, password):
 """ takes a picture """
 def take_background(path, capture):
     cam = cv2.VideoCapture(capture)   # should be the infrared cam
+    cam.set(3, 320)
+    cam.set(4, 240)
     ret, frame = cam.read()
     if ret:    # frame captured without any errors
         cv2.imwrite(path, frame) #save image
