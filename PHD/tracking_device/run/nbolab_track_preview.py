@@ -1,4 +1,4 @@
-#!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
+#!/home/pi/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
 from threading import Thread
 import cv2, time
 import sys
@@ -15,7 +15,7 @@ from time import time as timer
 if __name__ == '__main__':
     # read the config file
     parser = ConfigParser()
-    parser.read('/home/nicoluarte/uni/PHD/tracking_device/config/config.conf')
+    parser.read('/home/pi/uni/PHD/tracking_device/config/config.conf')
 
 # read the arguments
 parserArg = argparse.ArgumentParser(description='write frame track to csv')
@@ -32,7 +32,7 @@ if args.background is not None:
     print("loaded background from " + args.background)
     print("background image size: " + str(bg.shape))
 else:
-    bg = cv2.imread('/home/nicoluarte/uni/PHD/tracking_device/background/bg.png')
+    bg = cv2.imread('/home/pi/uni/PHD/tracking_device/background/bg.png')
     print("load default path for background")
     print("background image size: " + str(bg.shape))
 
@@ -88,7 +88,7 @@ class VideoGet:
         self.stopped = True
 
 
-video_getter = VideoGet(1).start()
+video_getter = VideoGet(0).start()
 
 while(True):
     # start timer for fps control
@@ -108,14 +108,14 @@ while(True):
         ))
     # plot stuff
     diff = timer() - start
-    img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
-    img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
-    img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
-    cv2.putText(img_jpg, str(diff), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255), 3)
-    cv2.imshow('frame', img_jpg)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    #cv2.imwrite('/home/nicoluarte/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
+    #img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
+    #img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
+    #img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
+    #cv2.putText(img_jpg, str(diff), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255), 3)
+    #cv2.imshow('frame', img_jpg)
+    #if cv2.waitKey(1) & 0xFF == ord('q'):
+    #    break
+    #cv2.imwrite('/home/pi/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
     print(diff)
     # end timer for fps control
 video_getter.stop()

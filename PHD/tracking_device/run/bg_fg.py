@@ -9,9 +9,9 @@ from matplotlib.animation import FuncAnimation
 
 
 def preprocess_image(image, d, sigma1, sigma2):
-    bl_filter_image = cv2.bilateralFilter(image, d, sigma1, sigma2) # test out parameters
     gray_image = cv2.cvtColor(bl_filter_image, cv2.COLOR_BGR2GRAY)
-    return gray_image
+    bl_filter_image = cv2.bilateralFilter(gray_image, d, sigma1, sigma2) # test out parameters
+    return bl_filter_image
 
 """ the image gets dilated (if one pixel under the kernel is '1' the a determined pixel is also '1') and then followed by erosion (a pixel is 1 if all pixels under the kernel are 1) """
 def postprocess_image(image, kx, ky):
