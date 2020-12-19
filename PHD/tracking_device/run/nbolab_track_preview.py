@@ -57,6 +57,8 @@ else:
     print("selected camara default FPS:" + str(fps*1000))
 
 while(True):
+    # start timer for fps control
+    start = timer()
     # read a single frame
     ret, frame = cap.read()
     # process the image
@@ -70,10 +72,12 @@ while(True):
         ky=parser.getint('postprocess', 'kernely')
         ))
     # plot stuff
+    diff = timer() - start
     img_jpg = cv2.circle(frame, points[0], radius=8, color=(0, 0, 255), thickness=-1)
     img_jpg = cv2.circle(frame, points[1], radius=8, color=(0, 0, 255), thickness=-1)
     img_jpg = cv2.circle(frame, points[2], radius=8, color=(0, 0, 255), thickness=-1)
+    cv2.putText(img_jpg, str(diff), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255), 3)
     cv2.imwrite('/home/pi/uni/PHD/tracking_device/stream/stream.jpg', img_jpg) 
-    print("frame done")
+    # end timer for fps control
 cap.release()
 cv2.destroyAllWindows()
