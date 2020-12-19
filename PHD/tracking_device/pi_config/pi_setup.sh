@@ -79,8 +79,7 @@ then
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
 
-		ssh ${IP[$i]} "nohup python3 $PREVIEW --background ~/uni/PHD/tracking_device/background/bg_node0.png --capture 0 &"
-		ssh ${IP[$i]} "nohup mjpg_streamer -i 'input_file.so -f $STREAM -n stream.jpg' -o 'output_http.so -w /usr/local/www' &"
+		ssh ${IP[$i]} "nohup python3 $PREVIEW --background ~/uni/PHD/tracking_device/background/bg_node0.png --capture 0 & nohup mjpg_streamer -i 'input_file.so -f $STREAM -n stream.jpg' -o 'output_http.so -w /usr/local/www' &"
 	done
 
 fi
