@@ -62,7 +62,7 @@ while(True):
     # read a single frame
     ret, frame = cap.read()
     # process the image
-    preview, _, _, points = body_tracking(image_full_process(
+    _, _, _, points = body_tracking(image_full_process(
         background=bg,
         foreground=frame,
         d=parser.getint('preprocess', 'filter_size'),
