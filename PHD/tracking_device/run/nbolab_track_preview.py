@@ -9,9 +9,6 @@ import socket
 import argparse
 from configparser import ConfigParser
 from time import time as timer
-import matplotlib
-matplotlib.use('TKAgg')
-import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     # read the config file
