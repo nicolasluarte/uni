@@ -5,6 +5,7 @@ import skfmm
 import paramiko
 import time, datetime
 from matplotlib.animation import FuncAnimation
+from time import time as timer
 
 def preprocess_image(image, d, sigma1, sigma2):
     #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -13,30 +14,29 @@ def preprocess_image(image, d, sigma1, sigma2):
 
 """ the image gets dilated (if one pixel under the kernel is '1' the a determined pixel is also '1') and then followed by erosion (a pixel is 1 if all pixels under the kernel are 1) """
 def postprocess_image(image, kx, ky):
-   #kernel = np.ones((17,17), np.uint8) 
-   # ellipse kernel works better
    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(kx,ky))
    close_operation = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
-   _, thresholded = cv2.threshold(close_operation, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+   #_, thresholded = cv2.threshold(close_operation, 127, 255, 0)
    #blur = cv2.medianBlur(thresholded, 5)
    # didnt use blur, better results without it
-   blur = thresholded
-   return blur
+   return close_operation
 
 """ takes the bigger contour area, all small areas are considered noise as there's is to be only one animal; it also requires a gray image"""
 def contour_extraction(image):
-    ret, thresh = cv2.threshold(image, 127, 255, 0)
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    extraction = cv2.drawContours(np.zeros((image.shape[0], image.shape[1])), [max(contours, key = cv2.contourArea)], -1, 255, thickness=-1)
+    _, thresholded = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    #ret, thresh = cv2.threshold(image, 127, 255, 0)
+    contours, hierarchy = cv2.findContours(thresholded, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    canvas = np.zeros((image.shape[0], image.shape[1]))
+    extraction = cv2.drawContours(canvas, [max(contours, key = cv2.contourArea)], -1, 255, thickness=-1)
     return extraction
 
 
 """ outputs the difference between the background and background + animal, so animal can be isolated """
 def bgfg_diff(background, foreground, d, sigma1, sigma2):
     #bg = preprocess_image(background, d, sigma1, sigma2)
-    bg = background
-    fg = preprocess_image(foreground, d, sigma1, sigma2)
-    diff = cv2.absdiff(bg, fg)
+    #fg = preprocess_image(foreground, d, sigma1, sigma2)
+    #diff = cv2.absdiff(background, fg)
+    diff = cv2.absdiff(background, foreground)
     return diff
 
 """ this function does all the pipeline """
@@ -47,6 +47,7 @@ def image_full_process(background, foreground, d, sigma1, sigma2, kx, ky):
     diff_postproc = postprocess_image(diff, kx, ky)
     # extract the biggest contour area and paste it in an empty canvas
     final_image = contour_extraction(diff_postproc)
+    #final_image = diff_postproc
     return final_image
 
 """ function to get the head, tail and body position
