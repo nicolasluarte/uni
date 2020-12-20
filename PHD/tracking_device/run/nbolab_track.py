@@ -1,7 +1,4 @@
-#!/home/nicoluarte/uni/PHD/tracking_device/environments/bg_fg/bin/python3.8
-import sys
-sys.path.append('../')
-from bg_fg import *
+from tracking_functions import *
 import os
 import glob
 import csv
@@ -9,46 +6,63 @@ import socket
 import argparse
 from configparser import ConfigParser
 from time import time as timer
+from pathlib import Path
+import picamera
+from vidgear.gears import PiGear
+
+"""
+    Paths definition
+
+    Home
+    Repository
+    Config
+    Background
+    Background file: bg_HOSTNAME.png
+    csv files
+"""
+home = str(Path.home())
+repo = home + '/nbolab'
+config = repo + '/config'
+backgrounds = repo + '/background'
+hostname = os.popen('hostname').read().rstrip('\n')
+csv_files = repo ++ '/csv_bak'
 
 
-if __name__ == '__main__':
-    # read the config file
-    parser = ConfigParser()
-    parser.read('../config/config.conf')
+"""
+    Read the parameters in the configuration file
+    NOTE: file must by built with python
+"""
+parser = ConfigParser()
+parser.read(config)
 
-# read the arguments
-parserArg = argparse.ArgumentParser(description='write frame track to csv')
+
+"""
+    Read the arguments passed for program execution
+"""
+parserArg = argparse.ArgumentParser(description='write tracked frame to csv')
 parserArg.add_argument('--file_name', type=str, help='name of the file')
 parserArg.add_argument('--background', type=str, help='specify the path of back')
 parserArg.add_argument('--capture', type=int, help='set the camera stream vide0 as default')
 parserArg.add_argument('--fps', type=int, help='set frames per second for processing')
 args = parserArg.parse_args()
 
-
-# read from virtual camera and write to csv
-
-# csv label, so every record is distinct
+"""
+    Set the arguments passed or set to defaults
+"""
+# defines the csv filename, uses hostname + date as default
 if args.file_name is not None:
     label = str(args.file_name)
 else:
     label = str(socket.gethostname()) + "_" + \
         datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
-# set the background
+# set the background, uses the background folder as default
 if args.background is not None:
     bg = cv2.imread(args.background)
     print("loaded background from " + args.background)
 else:
-    bg = cv2.imread('../background/bg.png')
-    print("load default path for background")
-
-# set the capture device
-if args.capture is not None:
-    cap = cv2.VideoCapture(args.capture)
-    print("user defined cam selected: " + str(args.capture))
-else:
-    cap = cv2.VideoCapture(0)
-    print("default camera selected")
+    bg = cv2.imread(backgrounds + '/bg_' + str(hostname) + '.png')
+    print("Loaded: " + str(bg))
 
 # set fps control
 if args.fps is not None:
@@ -60,31 +74,77 @@ else:
     fps /= 1000
     print("selected camara default FPS:" + str(fps*1000))
 
-# start writing into csv
-with open('../csv_bak/' + label + '.csv', 'w') as f:
+# set the capture device
+stream = PiGear(resolution=(320, 240), framerate=fps, colorspace='COLOR_BGR2GRAY').start()
+
+"""
+    Program main loop
+
+    Writes a csv with the points extracted from the body tracking functions
+    
+    All parameters are defined in the config file, and initialized here
+
+"""
+
+### PARAMETERS ###
+d=parser.getint('preprocess', 'filter_size')
+sigma1=parser.getint('preprocess', 'sigma_color')
+sigma2=parser.getint('preprocess', 'sigma_space')
+kx=parser.getint('postprocess', 'kernelx')
+ky=parser.getint('postprocess', 'kernely')
+### PARAMETERS END ###
+
+with open(csv_files + label + '.csv', 'w') as f:
+
+    ### CSV HEADERS ###
     writer = csv.writer(f)
-    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "body_x", "body_y", "tail_x", "tail_y", "head_x", "head_y"])
+    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "centroid_x", "centroid_y", "tail_x", "tail_y", "head_x", "head_y"])
+    ### CSV HEADERS END ###
+
     while(True):
-        # start timer for fps control
+
+        ### FPS CONTROL ### 
         start = timer()
+        ### FPS CONTROL END ###
+
         # read a single frame
-        ret, frame = cap.read()
-        # process the image
-        fp, _, _, points = body_tracking(image_full_process(
-            background=bg,
-            foreground=frame,
-            d=parser.getint('preprocess', 'filter_size'),
-            sigma1=parser.getint('preprocess', 'sigma_color'),
-            sigma2=parser.getint('preprocess', 'sigma_space'),
-            kx=parser.getint('postprocess', 'kernelx'),
-            ky=parser.getint('postprocess', 'kernely')
-            ))
+        frame = stream.read()
+
+        ### IMAGE PROCESSING ###
+        frame_filter = preprocess_image(frame, d, sigma1, sigma2)
+        frame_diff = bgfg_diff(bg, frame_filter, d, sigma1, sigma2)
+        contours = contour_extraction(frame_diff)
+        frame_post = postprocess_image(contours, kx, ky)
         time_stamp = datetime.datetime.now().strftime("%Y %m %d %H %M %S %f")
-        log = list(map(int, time_stamp.split())) + [item for i in points for item in i]
+        ### IMAGE PROCESSING END ###
+
+        ### POINTS EXTRACTION ###
+        M = cv2.moments(frame_post)
+        centroidX = int(body['m10'] / body['m00'])
+        centroidY = int(body['m01'] / body['m00'])
+        tailX = 0
+        tailY = 0
+        headX = 0
+        headY = 0
+        ### POINTS EXTRACTION END ###
+
+        ### PARSING DATA ###
+        log = list(map(int, time_stamp,split())) + [centroidX,
+                centroidY,
+                tailX,
+                tailY,
+                headX,
+                headY]
         writer.writerow(log)
-        # end timer for fps control
+        ### PARSING DATA END ###
+
+        ### FPS CONTROL ###
         diff = timer() - start
         while diff < fps:
             diff = timer() - start
+        ### FPS CONTROL END ###
+
+### STOP ###
+stream.stop()
 cap.release()
 cv2.destroyAllWindows()
