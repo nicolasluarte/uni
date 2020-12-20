@@ -21,12 +21,11 @@ from vidgear.gears import PiGear
     csv files
 """
 home = str(Path.home())
-repo = home + '/nbolab'
-config = repo + '/config'
+repo = home + '/uni/PHD/tracking_device'
+config = repo + '/config/config.conf'
 backgrounds = repo + '/background'
 hostname = os.popen('hostname').read().rstrip('\n')
-csv_files = repo ++ '/csv_bak'
-
+csv_files = repo + '/csv_bak'
 
 """
     Read the parameters in the configuration file
