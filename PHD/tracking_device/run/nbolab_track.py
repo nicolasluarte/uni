@@ -8,6 +8,7 @@ from configparser import ConfigParser
 from time import time as timer
 from pathlib import Path
 import picamera
+import datetime
 from vidgear.gears import PiGear
 
 """
@@ -50,17 +51,17 @@ args = parserArg.parse_args()
 """
 # defines the csv filename, uses hostname + date as default
 if args.file_name is not None:
-    label = str(args.file_name)
+    label = '/' + str(args.file_name)
 else:
-    label = str(socket.gethostname()) + "_" + \
+    label = '/' + str(socket.gethostname()) + "_" + \
         datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
 # set the background, uses the background folder as default
 if args.background is not None:
-    bg = cv2.imread(args.background)
+    bg = cv2.imread(args.background. cv2.IMREAD_GRAYSCALE)
     print("loaded background from " + args.background)
 else:
-    bg = cv2.imread(backgrounds + '/bg_' + str(hostname) + '.png')
+    bg = cv2.imread(backgrounds + '/bg_' + str(hostname) + '.png', cv2.IMREAD_GRAYSCALE)
     print("Loaded: " + str(bg))
 
 # set fps control
@@ -69,9 +70,7 @@ if args.fps is not None:
     fps /= 1000
     print("user defined FPS: " + str(args.fps))
 else:
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    fps /= 1000
-    print("selected camara default FPS:" + str(fps*1000))
+    fps = 30
 
 # set the capture device
 stream = PiGear(resolution=(320, 240), framerate=fps, colorspace='COLOR_BGR2GRAY').start()
@@ -119,8 +118,8 @@ with open(csv_files + label + '.csv', 'w') as f:
 
         ### POINTS EXTRACTION ###
         M = cv2.moments(frame_post)
-        centroidX = int(body['m10'] / body['m00'])
-        centroidY = int(body['m01'] / body['m00'])
+        centroidX = int(M['m10'] / M['m00'])
+        centroidY = int(M['m01'] / M['m00'])
         tailX = 0
         tailY = 0
         headX = 0
@@ -128,7 +127,7 @@ with open(csv_files + label + '.csv', 'w') as f:
         ### POINTS EXTRACTION END ###
 
         ### PARSING DATA ###
-        log = list(map(int, time_stamp,split())) + [centroidX,
+        log = list(map(int, time_stamp.split())) + [centroidX,
                 centroidY,
                 tailX,
                 tailY,

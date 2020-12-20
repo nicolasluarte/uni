@@ -9,6 +9,8 @@ HOSTNAME=($(awk -F ',' '{print $2}' ipfile))
 
 # variables for running previews
 PREVIEW='uni/PHD/tracking_device/run/nbolab_track_preview.py'
+MAIN='uni/PHD/tracking_device/run/nbolab_track.py'
+BG='uni/PHD/tracking_device/run/take_bg.py'
 STREAM='uni/PHD/tracking_device/stream'
 
 if [[ "$1" == "full" ]] || [[ "$1" == "all" ]]
@@ -93,4 +95,26 @@ then
 		ssh ${IP[$i]} "sudo rm -rf uni &&
 			git clone https://github.com/nicolasluarte/uni.git"
 	done
+fi
+
+# main program run
+if [[ "$1" == "main" ]] || [[ "$1" == "all" ]]
+then
+	echo "Performing main program"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "python3 $MAIN --background uni/PHD/tracking_device/background/bg_pi0.png --capture 0"
+	done
+
+fi
+
+# take background
+if [[ "$1" == "take_bg" ]] || [[ "$1" == "all" ]]
+then
+	echo "taking background"
+	for ((i=0; i<${#IP[@]}; i++))
+	do 
+		ssh ${IP[$i]} "python3 $BG --capture 0"
+	done
+
 fi
