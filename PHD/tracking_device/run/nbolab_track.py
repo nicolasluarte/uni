@@ -62,7 +62,7 @@ if args.background is not None:
     print("loaded background from " + args.background)
 else:
     bg = cv2.imread(backgrounds + '/bg_' + str(hostname) + '.png', cv2.IMREAD_GRAYSCALE)
-    print("Loaded: " + str(bg))
+    print("Loaded: " + str(bg.shape))
 
 # set fps control
 if args.fps is not None:
@@ -102,7 +102,7 @@ with open(csv_files + label + '.csv', 'w') as f:
     while(True):
 
         ### FPS CONTROL ### 
-        start = timer()
+        # start = timer()
         ### FPS CONTROL END ###
 
         # read a single frame
@@ -137,9 +137,9 @@ with open(csv_files + label + '.csv', 'w') as f:
         ### PARSING DATA END ###
 
         ### FPS CONTROL ###
-        diff = timer() - start
-        while diff < fps:
-            diff = timer() - start
+        # diff = timer() - start
+        # while diff < fps:
+        #     diff = timer() - start
         ### FPS CONTROL END ###
 
 ### STOP ###
