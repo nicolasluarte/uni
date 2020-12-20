@@ -103,7 +103,7 @@ then
 	echo "Performing main program"
 	for ((i=0; i<${#IP[@]}; i++))
 	do 
-		ssh ${IP[$i]} "python3 $MAIN --background uni/PHD/tracking_device/background/bg_pi0.png --capture 0"
+		ssh ${IP[$i]} "cd /home/pi/uni/PHD/tracking_device/run && python3 nbolab_track.py"
 	done
 
 fi
