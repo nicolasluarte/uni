@@ -124,7 +124,7 @@ with open(csv_files + label + '.csv', 'w') as f:
         tailY = 0
         headX = 0
         headY = 0
-        print(centroidX)
+        print(centroidX, centroidY)
         ### POINTS EXTRACTION END ###
 
         ### PARSING DATA ###
