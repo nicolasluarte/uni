@@ -22,11 +22,11 @@ from vidgear.gears import PiGear
     csv files
 """
 home = str(Path.home())
-repo = home + '/uni/PHD/tracking_device'
-config = repo + '/config/config.conf'
-backgrounds = repo + '/background'
-hostname = os.popen('hostname').read().rstrip('\n')
-csv_files = repo + '/csv_bak'
+repo = home + "/uni/PHD/tracking_device"
+config = repo + "/config/config.conf"
+backgrounds = repo + "/background"
+hostname = os.popen("hostname").read().rstrip("\n")
+csv_files = repo + "/csv_bak"
 
 """
     Read the parameters in the configuration file
@@ -39,11 +39,13 @@ parser.read(config)
 """
     Read the arguments passed for program execution
 """
-parserArg = argparse.ArgumentParser(description='write tracked frame to csv')
-parserArg.add_argument('--file_name', type=str, help='name of the file')
-parserArg.add_argument('--background', type=str, help='specify the path of back')
-parserArg.add_argument('--capture', type=int, help='set the camera stream vide0 as default')
-parserArg.add_argument('--fps', type=int, help='set frames per second for processing')
+parserArg = argparse.ArgumentParser(description="write tracked frame to csv")
+parserArg.add_argument("--file_name", type=str, help="name of the file")
+parserArg.add_argument("--background", type=str, help="specify the path of back")
+parserArg.add_argument(
+    "--capture", type=int, help="set the camera stream vide0 as default"
+)
+parserArg.add_argument("--fps", type=int, help="set frames per second for processing")
 args = parserArg.parse_args()
 
 """
@@ -51,17 +53,21 @@ args = parserArg.parse_args()
 """
 # defines the csv filename, uses hostname + date as default
 if args.file_name is not None:
-    label = '/' + str(args.file_name)
+    label = "/" + str(args.file_name)
 else:
-    label = '/' + str(socket.gethostname()) + "_" + \
-        datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    label = (
+        "/"
+        + str(socket.gethostname())
+        + "_"
+        + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    )
 
 # set the background, uses the background folder as default
 if args.background is not None:
     bg = cv2.imread(args.background, cv2.IMREAD_GRAYSCALE)
     print("loaded background from " + args.background)
 else:
-    bg = cv2.imread(backgrounds + '/bg_' + str(hostname) + '.png', cv2.IMREAD_GRAYSCALE)
+    bg = cv2.imread(backgrounds + "/bg_" + str(hostname) + ".png", cv2.IMREAD_GRAYSCALE)
     print("Loaded: " + str(bg.shape))
 
 # set fps control
@@ -73,7 +79,9 @@ else:
     fps = 30
 
 # set the capture device
-stream = PiGear(resolution=(320, 240), framerate=fps, colorspace='COLOR_BGR2GRAY').start()
+stream = PiGear(
+    resolution=(320, 240), framerate=fps, colorspace="COLOR_BGR2GRAY"
+).start()
 
 """
     Program main loop
@@ -85,23 +93,39 @@ stream = PiGear(resolution=(320, 240), framerate=fps, colorspace='COLOR_BGR2GRAY
 """
 
 ### PARAMETERS ###
-d=parser.getint('preprocess', 'filter_size')
-sigma1=parser.getint('preprocess', 'sigma_color')
-sigma2=parser.getint('preprocess', 'sigma_space')
-kx=parser.getint('postprocess', 'kernelx')
-ky=parser.getint('postprocess', 'kernely')
+d = parser.getint("preprocess", "filter_size")
+sigma1 = parser.getint("preprocess", "sigma_color")
+sigma2 = parser.getint("preprocess", "sigma_space")
+kx = parser.getint("postprocess", "kernelx")
+ky = parser.getint("postprocess", "kernely")
 ### PARAMETERS END ###
 
-with open(csv_files + label + '.csv', 'w') as f:
+with open(csv_files + label + ".csv", "w") as f:
 
     ### CSV HEADERS ###
     writer = csv.writer(f)
-    writer.writerow(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "MICROSECOND", "centroid_x", "centroid_y", "tail_x", "tail_y", "head_x", "head_y"])
+    writer.writerow(
+        [
+            "YEAR",
+            "MONTH",
+            "DAY",
+            "HOUR",
+            "MINUTE",
+            "SECOND",
+            "MICROSECOND",
+            "centroid_x",
+            "centroid_y",
+            "tail_x",
+            "tail_y",
+            "head_x",
+            "head_y",
+        ]
+    )
     ### CSV HEADERS END ###
 
-    while(True):
+    while True:
 
-        ### FPS CONTROL ### 
+        ### FPS CONTROL ###
         # start = timer()
         ### FPS CONTROL END ###
 
@@ -118,8 +142,8 @@ with open(csv_files + label + '.csv', 'w') as f:
 
         ### POINTS EXTRACTION ###
         M = cv2.moments(frame_post)
-        centroidX = int(M['m10'] / M['m00'])
-        centroidY = int(M['m01'] / M['m00'])
+        centroidX = int(M["m10"] / M["m00"])
+        centroidY = int(M["m01"] / M["m00"])
         tailX = 0
         tailY = 0
         headX = 0
@@ -128,12 +152,14 @@ with open(csv_files + label + '.csv', 'w') as f:
         ### POINTS EXTRACTION END ###
 
         ### PARSING DATA ###
-        log = list(map(int, time_stamp.split())) + [centroidX,
-                centroidY,
-                tailX,
-                tailY,
-                headX,
-                headY]
+        log = list(map(int, time_stamp.split())) + [
+            centroidX,
+            centroidY,
+            tailX,
+            tailY,
+            headX,
+            headY,
+        ]
         writer.writerow(log)
         ### PARSING DATA END ###
 
